@@ -37,6 +37,8 @@ source script/checkconfig.sh
 source script/addoncheckconfig.sh
 source script/logininformation.sh
 source script/instructions.sh
+# Alpha
+source script/confighelper.sh
 
 source script/bash.sh
 source script/system.sh
@@ -80,6 +82,8 @@ source script/firewall.sh
 # source addons/addnewsite.sh
 # source addons/addnewmysqluser.sh
 
+#Alpha!
+#confighelper
 
 createpw
 checksystem
