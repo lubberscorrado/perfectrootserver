@@ -38,7 +38,7 @@ echo "${info} Installing PHP7.1...." | awk '{ print strftime("[%H:%M:%S] |"), $0
 #$PURGE_PHP5=$(dpkg -l | grep php5)
 apt-get purge -y php5* >>"$main_log" 2>>"$err_log"
 apt-get purge -y php7* >>"$main_log" 2>>"$err_log"
-apt-get install -f -y -t unstable php-auth-sasl php-http-request php$PHPVERSION7-bcmath php$PHPVERSION7-zip php-mail php-net-dime php-net-url php-pear php-apcu php$PHPVERSION7 php$PHPVERSION7-cli php$PHPVERSION7-common php$PHPVERSION7-curl php$PHPVERSION7-dev php$PHPVERSION7-fpm php$PHPVERSION7-intl php$PHPVERSION7-mcrypt php$PHPVERSION7-mysql php$PHPVERSION7-soap php$PHPVERSION7-sqlite3 php$PHPVERSION7-xsl php$PHPVERSION7-xmlrpc php-mbstring php-xml php$PHPVERSION7-json php$PHPVERSION7-opcache php$PHPVERSION7-readline php$PHPVERSION7-xml php$PHPVERSION7-mbstring >>"$main_log" 2>>"$err_log"
+apt-get install -f -y -t testing php-auth-sasl php-http-request php$PHPVERSION7-bcmath php$PHPVERSION7-zip php-mail php-net-dime php-net-url php-pear php-apcu php$PHPVERSION7 php$PHPVERSION7-cli php$PHPVERSION7-common php$PHPVERSION7-curl php$PHPVERSION7-dev php$PHPVERSION7-fpm php$PHPVERSION7-intl php$PHPVERSION7-mcrypt php$PHPVERSION7-mysql php$PHPVERSION7-soap php$PHPVERSION7-sqlite3 php$PHPVERSION7-xsl php$PHPVERSION7-xmlrpc php-mbstring php-xml php$PHPVERSION7-json php$PHPVERSION7-opcache php$PHPVERSION7-readline php$PHPVERSION7-xml php$PHPVERSION7-mbstring >>"$main_log" 2>>"$err_log"
 
 
 # Configure PHP
