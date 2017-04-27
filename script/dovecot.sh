@@ -35,7 +35,7 @@ cp /etc/ssl/`hostname -f`.cer /usr/local/share/ca-certificates/ >>"$main_log" 2>
 update-ca-certificates >>"$main_log" 2>>"$err_log"
 
 apt-get update -y >>"$main_log" 2>>"$err_log"
-apt-get -f -y -t jessie-backports install dovecot-common dovecot-core dovecot-imapd dovecot-lmtpd dovecot-managesieved dovecot-sieve dovecot-mysql >>"$main_log" 2>>"$err_log"
+apt-get install -f -y -t unstable dovecot-common dovecot-core dovecot-imapd dovecot-lmtpd dovecot-managesieved dovecot-sieve dovecot-mysql >>"$main_log" 2>>"$err_log"
 
 groupadd -g 5000 vmail >>"$main_log" 2>>"$err_log"
 useradd -g vmail -u 5000 vmail -d /var/vmail >>"$main_log" 2>>"$err_log"
