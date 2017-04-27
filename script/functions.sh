@@ -46,13 +46,13 @@ ok="$(greenb [OKAY] -)"
 
 IPADR=$(ip route get 8.8.8.8 | head -1 | cut -d' ' -f8)
 INTERFACE=$(ip route get 8.8.8.8 | head -1 | cut -d' ' -f5)
-FQDNIP=$(source ~/userconfig.cfg; dig @8.8.8.8 +short ${MYDOMAIN})
-WWWIP=$(source ~/userconfig.cfg; dig @8.8.8.8 +short www.${MYDOMAIN})
-MAILIP=$(source ~/userconfig.cfg; dig @8.8.8.8 +short mail.${MYDOMAIN})
-CHECKAC=$(source ~/userconfig.cfg; dig @8.8.8.8 ${MYDOMAIN} txt | grep -i mailconf=)
-CHECKMX=$(source ~/userconfig.cfg; dig @8.8.8.8 mx ${MYDOMAIN} +short)
-CHECKSPF=$(source ~/userconfig.cfg; dig @8.8.8.8 ${MYDOMAIN} txt | grep -i spf)
-CHECKDKIM=$(source ~/userconfig.cfg; dig @8.8.8.8 mail._domainkey.${MYDOMAIN} txt | grep -i DKIM1)
+FQDNIP=$(source ~/root/userconfig.cfg; dig @8.8.8.8 +short ${MYDOMAIN})
+WWWIP=$(source ~/root/userconfig.cfg; dig @8.8.8.8 +short www.${MYDOMAIN})
+MAILIP=$(source ~/root/userconfig.cfg; dig @8.8.8.8 +short mail.${MYDOMAIN})
+CHECKAC=$(source ~/root/userconfig.cfg; dig @8.8.8.8 ${MYDOMAIN} txt | grep -i mailconf=)
+CHECKMX=$(source ~/root/userconfig.cfg; dig @8.8.8.8 mx ${MYDOMAIN} +short)
+CHECKSPF=$(source ~/root/userconfig.cfg; dig @8.8.8.8 ${MYDOMAIN} txt | grep -i spf)
+CHECKDKIM=$(source ~/root/userconfig.cfg; dig @8.8.8.8 mail._domainkey.${MYDOMAIN} txt | grep -i DKIM1)
 CHECKRDNS=$(dig @8.8.8.8 -x ${IPADR} +short)
 
 main_log="/root/logs/main.log"
