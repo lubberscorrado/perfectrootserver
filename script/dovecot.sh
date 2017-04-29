@@ -53,7 +53,7 @@ mail_uid = vmail
 mail_gid = vmail
 mail_plugins = quota acl mail_log notify
 auth_username_chars = abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.-_@
-ssl_protocols = !SSLv3 !SSLv2
+ssl_protocols = !SSLv3
 ssl_cipher_list = EECDH+ECDSA+CHACHA20 EECDH+CHACHA20 EECDH+ECDSA+AESGCM EECDH+AESGCM EECDH+ECDSA+AES256 EECDH+AES256 EECDH+ECDSA+AES128 EECDH+AES128 EECDH+ECDSA+3DES EECDH+3DES EDH+CHACHA20 EDH+AESGCM EDH+AES256 EDH+AES128 EDH+3DES !CAMELLIA !SEED !IDEA !RC2 !RC4 !aDSS !kECDHe !kECDHr !kDHd !kDHr !eNULL !aNULL !MEDIUM !LOW !EXPORT
 log_timestamp = "%Y-%m-%d %H:%M:%S "
 passdb {
