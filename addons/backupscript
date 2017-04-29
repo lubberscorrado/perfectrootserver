@@ -7,6 +7,8 @@
 # Enable Debug
 #set -x
 
+OLD_BACKUP_FILES=3
+
 ##########################################################################
 ###################### DO NOT EDIT ANYTHING BELOW! #######################
 ##########################################################################
@@ -44,6 +46,7 @@ echo "$(date +"[%T]") | ${info} Please wait while the Script is create and Backu
 # This backupscript is an standalone Script!
 	if [ ! -f /root/credentials.txt ]; then
 		echo "${error} Can not find file /root/credentials.txt!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+		echo "${error} To run this Backupscript you have to install https://github.com/shoujii/perfectrootserver" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 		exit 0
 	fi
 
@@ -130,14 +133,6 @@ echo "${info} Update System" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 apt-get update -y >>/root/logs/stderrorBACKUP.log 2>&1 >>/root/logs/stdoutBACKUP.log
 apt-get upgrade -y >>/root/logs/stderrorBACKUP.log 2>&1 >>/root/logs/stdoutBACKUP.log
 
-# ToDo
-# Check old backup files
-find /etc/nginx/html/backups/* -type d -ctime +4 | xargs rm -rf
-
-
-#Backup, in die install einfügen
-# http://www.sysadminslife.com/linux/cronjob-unter-debian-und-ubuntu-erstellen/
-#crontab -e
-#00 20 * * * /path/to/backup.sh
+find /etc/nginx/html/backups/* -type d -ctime +${OLD_BACKUP_FILES} | xargs rm -rf
 
 echo "${ok} Backup finished!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
