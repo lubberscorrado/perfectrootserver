@@ -25,7 +25,6 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 
-source script/functions.sh
 source script/instructions.sh
 
 instructions

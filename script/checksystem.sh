@@ -40,7 +40,7 @@ checksystem() {
 	fi
 
 	if [ $(dpkg-query -l | grep openssl | wc -l) -ne 1 ]; then
-		apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get -y --force-yes install openssl >>"$main_log" 2>>"$err_log"
+		apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get install -f -y -t testing openssl >>"$main_log" 2>>"$err_log"
 	fi
 
 	echo "$(date +"[%T]") | ${info} Checking your system..."

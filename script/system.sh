@@ -69,8 +69,6 @@ cat > /etc/apt/sources.list <<END
 deb http://packages.dotdeb.org jessie all
 deb-src http://packages.dotdeb.org jessie all
 
-# MariaDB
-deb [arch=amd64,i386] http://mirror.netcologne.de/mariadb/repo/10.1/debian jessie main
 
 # Debian
 deb 	http://security.debian.org/ jessie/updates main contrib non-free

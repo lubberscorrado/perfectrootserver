@@ -181,3 +181,4 @@ instructions() {
 }
 source ~/configs/userconfig.cfg
 source ~/configs/addonconfig.cfg
+source script/functions.sh

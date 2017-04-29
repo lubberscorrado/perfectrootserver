@@ -32,6 +32,9 @@ echo "${info} Installing phpMyAdmin..." | awk '{ print strftime("[%H:%M:%S] |"),
 htpasswd -b /etc/nginx/htpasswd/.htpasswd ${PMA_HTTPAUTH_USER} ${PMA_HTTPAUTH_PASS} >>"$main_log" 2>>"$err_log"
 cd /usr/local
 git clone -b STABLE https://github.com/phpmyadmin/phpmyadmin.git -q
+cd /usr/local/phpmyadmin
+composer update --no-dev
+cd /usr/local
 mkdir phpmyadmin/save
 mkdir phpmyadmin/upload
 chmod 0700 phpmyadmin/save
