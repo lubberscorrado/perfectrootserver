@@ -30,17 +30,17 @@ if [ ${USE_MAILSERVER} == '1' ]; then
 echo "${info} Installing Vimbadmin..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
 #Create Database
-mysql --defaults-file=/etc/mysql/debian.cnf -e "CREATE DATABASE vimbadmin; GRANT ALL ON vimbadmin.* TO 'vimbadmin'@'localhost' IDENTIFIED BY '${VIMB_MYSQL_PASS}'; FLUSH PRIVILEGES;" >>"$main_log" 2>>"$err_log"
+mysql --defaults-file=/etc/mysql/debian.cnf -e "CREATE DATABASE vimbadmin; GRANT ALL ON vimbadmin.* TO 'vimbadmin'@'localhost' IDENTIFIED BY '${VIMB_MYSQL_PASS}'; FLUSH PRIVILEGES;" >>"$main_log" 2>>"$err_log" || error_exit "Cannot create Vimbadmin Database! Aborting"
 
 #Download Vimbadmin via Composer
-apt-get -q -y --force-yes install git curl >>"$main_log" 2>>"$err_log"
+apt-get -q -y --force-yes install git curl >>"$main_log" 2>>"$err_log" || error_exit "Cannot install Curl! Aborting"
 cd ~/sources
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" >>"$main_log" 2>>"$err_log"
-php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" >>"$main_log" 2>>"$err_log"
+php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" >>"$main_log" 2>>"$err_log" || error_exit "Cannot verify Composer Hash! Aborting"
 php composer-setup.php >>"$main_log" 2>>"$err_log"
 php -r "unlink('composer-setup.php');"
 mv composer.phar /usr/local/bin/composer
-composer create-project opensolutions/vimbadmin /srv/vimbadmin -s dev -n --keep-vcs >>"$main_log" 2>>"$err_log"
+composer create-project opensolutions/vimbadmin /srv/vimbadmin -s dev -n --keep-vcs >>"$main_log" 2>>"$err_log" || error_exit "Cannot create Vimbadmin project! Aborting"
 
 chown -R www-data: /srv/vimbadmin/public
 chown -R www-data: /srv/vimbadmin/var
@@ -106,11 +106,11 @@ fi
 
 #Restarting services
 if [ ${USE_PHP7} == '1' ]; then
-		systemctl restart {dovecot,postfix,amavis,spamassassin,clamav-daemon,nginx,php7.0-fpm,mysql} >>"$main_log" 2>>"$err_log"
+		systemctl restart {dovecot,postfix,amavis,spamassassin,clamav-daemon,nginx,php7.0-fpm,mysql} >>"$main_log" 2>>"$err_log" || error_exit "Cannot restart services! Aborting"
 fi
 
 if [ ${USE_PHP5} == '1' ]; then
-		systemctl restart {dovecot,postfix,amavis,spamassassin,clamav-daemon,nginx,php5-fpm,mysql} >>"$main_log" 2>>"$err_log"
+		systemctl restart {dovecot,postfix,amavis,spamassassin,clamav-daemon,nginx,php5-fpm,mysql} >>"$main_log" 2>>"$err_log" || error_exit "Cannot restart services! Aborting"
 fi
 
 fi
