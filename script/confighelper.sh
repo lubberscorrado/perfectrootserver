@@ -550,8 +550,8 @@ ADDONCONFIG_COMPLETED="0"
 			InnoDB
 			MyISAM
 			"
-			read -p "Please choose an Präfix:" PRESTASHOP_CRYPT_PRF
-			echo "[Finishd] Your new DB Präfix is $PRESTASHOP_CRYPT_PRF"
+			read -p "Please choose an Praefix:" PRESTASHOP_CRYPT_PRF
+			echo "[Finishd] Your new DB Praefix is $PRESTASHOP_CRYPT_PRF"
 
 			# --------------------------------
 			echo "Please choose an DB engine"
