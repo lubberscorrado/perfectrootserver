@@ -28,7 +28,7 @@
 checkconfig() {
 
 	echo "${info} Checking your configuration..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-	for var in TIMEZONE MYDOMAIN SSH_PORT SSH_PASS USE_VALID_SSL SSLMAIL USE_MAILSERVER USE_PHP5 USE_PHP7 USE_WEBMAIL POSTFIX_ADMIN_PASS VIMB_MYSQL_PASS ROUNDCUBE_MYSQL_PASS USE_PMA PMA_HTTPAUTH_USER PMA_HTTPAUTH_PASS PMA_BFSECURE_PASS PMA_RESTRICT MYSQL_ROOT_PASS MYSQL_PMADB_NAME MYSQL_PMADB_USER MYSQL_PMADB_PASS MYSQL_HOSTNAME CLOUDFLARE HIGH_SECURITY ALLOWHTTPCONNECTIONS DEBUG_IS_SET                 
+	for var in TIMEZONE MYDOMAIN SSH_PORT SSH_PASS USE_VALID_SSL SSLMAIL USE_MAILSERVER USE_PHP5 USE_PHP7 USE_WEBMAIL POSTFIX_ADMIN_PASS VIMB_MYSQL_PASS ROUNDCUBE_MYSQL_PASS USE_PMA PMA_HTTPAUTH_USER PMA_HTTPAUTH_PASS PMA_BFSECURE_PASS PMA_RESTRICT MYSQL_ROOT_PASS MYSQL_PMADB_NAME MYSQL_PMADB_USER MYSQL_PMADB_PASS MYSQL_HOSTNAME CLOUDFLARE HIGH_SECURITY ALLOWHTTPCONNECTIONS DEBUG_IS_SET
 	do
 		if [[ -z ${!var} ]]; then
 			echo "${error} Parameter $(textb ${var}) must not be empty." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
@@ -40,7 +40,7 @@ checkconfig() {
         echo "${error} Please check the userconfig and set a valid value for the variable \"$(textb CONFIG_COMPLETED)\" to continue." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
         exit 1
 	fi
-	
+
 	if [ ${MYDOMAIN} == 'domain.tld' ]; then
 		echo "${error} Please enter a valid Domain!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 		exit 1
@@ -84,26 +84,26 @@ checkconfig() {
 				done
 		fi
 	done
-		if [ "$stopit" == "stop" ]; then
+		if [[ "$stopit" == "stop" ]]; then
 			exit 1
 		fi
-		
-		
+
+
 		if [ ${USE_PHP5} == '1' ] && [ ${USE_PHP7} == '1' ]; then
 		echo "${error} You can not choose two different PHP Versions" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 		exit 1
 		fi
-		
+
 		if [ ${USE_PHP5} == '0' ] && [ ${USE_PHP7} == '0' ]; then
 		echo "${error} You have to choose a PHP Version" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 		exit 1
 		fi
-		
+
 		if [ ${ALLOWHTTPCONNECTIONS} == '1' ] && [ ${HIGH_SECURITY} == '1' ]; then
 		echo "${error} You can not use ALLOWHTTPCONNECTIONS and HIGH_SECURITY together, please set one option to 0" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 		exit 1
 		fi
-		
+
 		if [ ${USE_MAILSERVER} == '0' ] && [ ${USE_WEBMAIL} == '1' ]; then
 		echo "${error} You can't install Roundcube without the mailserver!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 		exit 1
