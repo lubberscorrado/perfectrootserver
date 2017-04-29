@@ -25,7 +25,7 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 
-logininformation() {
+addonlogininformation() {
 
 touch ~/addoninformation.txt
 echo "///////////////////////////////////////////////////////////////////////////" >> ~/addoninformation.txt
@@ -33,7 +33,9 @@ echo "// Passwords, Usernames, Databases" >> ~/addoninformation.txt
 echo "///////////////////////////////////////////////////////////////////////////" >> ~/addoninformation.txt
 echo "" >> ~/addoninformation.txt
 echo "_______________________________________________________________________________________" >> ~/addoninformation.txt
+}
 
+logininformation() {
 touch ~/credentials.txt
 echo "///////////////////////////////////////////////////////////////////////////" >> ~/credentials.txt
 echo "// Passwords, Usernames, Databases" >> ~/credentials.txt

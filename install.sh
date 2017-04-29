@@ -25,11 +25,6 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 
-#Enable debug:
-#if [ ${DEBUG_IS_SET} == '1' ]; then
-#	set -x
-#fi
-
 source script/security.sh
 source script/functions.sh
 source script/checksystem.sh
@@ -120,14 +115,15 @@ publickey
 
 
 # Addon functions
+addonlogininformation
 ajenti
 teamspeak3
 minecraft
-vsftpd
+#vsftpd
 
 # untestet
-prestashopinstall
-piwikinstall
+#prestashopinstall
+#piwikinstall
 
 #openvpn
 #disablelogin

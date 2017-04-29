@@ -34,19 +34,23 @@ checksystem() {
 	echo
 	echo "$(date +"[%T]") | ${info} Welcome to the Perfect Rootserver installation!"
 	echo "$(date +"[%T]") | ${info} Please wait while the installer is preparing for the first use..."
+	
+	####cd /asddf/userconfig.cfg || error_exit "Cannot change directory! Aborting" #####
+	
+	apt-get update -y >>"$main_log" 2>>"$err_log"
 
 	if [ $(dpkg-query -l | grep dnsutils | wc -l) -ne 1 ]; then
-		apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get -y --force-yes install dnsutils >>"$main_log" 2>>"$err_log"
+		 apt-get -y --force-yes install dnsutils >>"$main_log" 2>>"$err_log" error_exit "Cannot install dnsutils! Aborting"
 	fi
 
 	if [ $(dpkg-query -l | grep openssl | wc -l) -ne 1 ]; then
-		apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get install -f -y -t testing openssl >>"$main_log" 2>>"$err_log"
+		apt-get install -f -y -t testing openssl >>"$main_log" 2>>"$err_log"
 	fi
 
 	echo "$(date +"[%T]") | ${info} Checking your system..."
 
 	if [ $(dpkg-query -l | grep gawk | wc -l) -ne 1 ]; then
-	apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get -y --force-yes install gawk >>"$main_log" 2>>"$err_log"
+		apt-get -y --force-yes install gawk >>"$main_log" 2>>"$err_log"
 	fi
 
 	if [ $USER != 'root' ]; then
@@ -60,7 +64,7 @@ checksystem() {
 	fi
 
 	if [ $(dpkg-query -l | grep lsb-release | wc -l) -ne 1 ]; then
-	apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get -y --force-yes install lsb-release >>"$main_log" 2>>"$err_log"
+		apt-get -y --force-yes install lsb-release >>"$main_log" 2>>"$err_log"
 	fi
 
 	if [ $(lsb_release -cs) != 'jessie' ] || [ $(lsb_release -is) != 'Debian' ]; then
@@ -83,7 +87,7 @@ checksystem() {
 		echo > /dev/null
 	else
 		if [ $(dpkg-query -l | grep facter | wc -l) -ne 1 ]; then
-			apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get -y --force-yes install facter >>"$main_log" 2>>"$err_log"
+			apt-get -y --force-yes install facter >>"$main_log" 2>>"$err_log"
 		fi
 
 		if	[ "$(facter virtual)" == 'physical' ] || [ "$(facter virtual)" == 'kvm' ]; then
@@ -115,6 +119,10 @@ checksystem() {
 	if [ ${HIGH_SECURITY} = '3' ] && [ ${DEBUG_IS_SET} = '0' ]; then
 		  echo "${error} To set the RSA value to 256, you have to get into the debug mode! I'm sorry bro" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
         exit 1
+	fi
+	
+	if [ ${DEBUG_IS_SET} == '1' ]; then
+		set -x
 	fi
 
 	#only debug!

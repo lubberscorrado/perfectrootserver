@@ -34,7 +34,6 @@ chmod 600 /etc/ssl/`hostname -f`.key >>"$main_log" 2>>"$err_log"
 cp /etc/ssl/`hostname -f`.cer /usr/local/share/ca-certificates/ >>"$main_log" 2>>"$err_log"
 update-ca-certificates >>"$main_log" 2>>"$err_log"
 
-apt-get update -y >>"$main_log" 2>>"$err_log"
 apt-get install -f -y -t testing dovecot-common dovecot-core dovecot-imapd dovecot-lmtpd dovecot-managesieved dovecot-sieve dovecot-mysql >>"$main_log" 2>>"$err_log"
 
 groupadd -g 5000 vmail >>"$main_log" 2>>"$err_log"

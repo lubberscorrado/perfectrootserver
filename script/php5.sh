@@ -95,11 +95,9 @@ END
 
 ln -s /etc/php5/mods-available/apcu.ini /etc/php5/mods-available/20-apcu.ini
 
-
 # Restart FPM & Nginx
 systemctl -q start nginx.service
 systemctl -q restart php5-fpm.service
 }
-
 source ~/configs/userconfig.cfg
 source ~/configs/versions.cfg

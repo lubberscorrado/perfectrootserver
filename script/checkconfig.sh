@@ -47,7 +47,7 @@ checkconfig() {
 		fi
 
 	if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
-		apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get -y --force-yes install libcrack2 >>"$main_log" 2>>"$err_log"
+		apt-get -y --force-yes install libcrack2 >>"$main_log" 2>>"$err_log"
 	fi
 
 	for var in ${SSH_PASS} ${POSTFIX_ADMIN_PASS} ${VIMB_MYSQL_PASS} ${ROUNDCUBE_MYSQL_PASS} ${PMA_HTTPAUTH_PASS} ${PMA_BFSECURE_PASS} ${MYSQL_ROOT_PASS} ${MYSQL_PMADB_PASS}
