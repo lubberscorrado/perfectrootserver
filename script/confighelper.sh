@@ -26,30 +26,17 @@
 #################################
 
 
+
 confighelper_installs() {
 if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
 	apt-get -y --force-yes install libcrack2 >>"$main_log" 2>>"$err_log"
 fi
-	
-	
+
 apt-get -qq update && apt-get -q -y --force-yes install openssl >>"$main_log" 2>>"$err_log"
 }
 
 
-confighelper_generate_passwords() {
-# Todo
-# Make an loop or function
-#Generate Passwords
-	SSH_PASS=$(openssl rand -base64 30 | tr -d / | cut -c -24 | grep -P '(?=^.{8,255}$)(?=^[^\s]*$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z])')
-	POSTFIX_ADMIN_PASS=$(openssl rand -base64 30 | tr -d / | cut -c -24 | grep -P '(?=^.{8,255}$)(?=^[^\s]*$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z])')
-	VIMB_MYSQL_PASS=$(openssl rand -base64 30 | tr -d / | cut -c -24 | grep -P '(?=^.{8,255}$)(?=^[^\s]*$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z])')
-	ROUNDCUBE_MYSQL_PASS=$(openssl rand -base64 30 | tr -d / | cut -c -24 | grep -P '(?=^.{8,255}$)(?=^[^\s]*$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z])')
-	PMA_HTTPAUTH_PASS=$(openssl rand -base64 30 | tr -d / | cut -c -24 | grep -P '(?=^.{8,255}$)(?=^[^\s]*$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z])')
-	PMA_BFSECURE_PASS=$(openssl rand -base64 40 | tr -d / | cut -c -32 | grep -P '(?=^.{8,255}$)(?=^[^\s]*$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z])')
-	MYSQL_ROOT_PASS=$(openssl rand -base64 30 | tr -d / | cut -c -24 | grep -P '(?=^.{8,255}$)(?=^[^\s]*$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z])')
-	MYSQL_PMADB_PASS=$(openssl rand -base64 30 | tr -d / | cut -c -24 | grep -P '(?=^.{8,255}$)(?=^[^\s]*$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z])')
-	AJENTI_PASS=$(openssl rand -base64 30 | tr -d / | cut -c -24 | grep -P '(?=^.{8,255}$)(?=^[^\s]*$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z])')
-}
+
 
 confighelper_userconfig() {
 #echo "${info} Start confighelper...." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
@@ -89,28 +76,6 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 	MYSQL_PMADB_PASS="generatepw"
 	MYSQL_HOSTNAME="localhost"
 	IAMEXPERT="0"
-	
-	
-	
-#Used SSH PORTS
-declare -A BLOCKED_PORTS='(
-    [21]="1"
-    [22]="1"
-    [25]="1"
-    [53]="1"
-    [80]="1"
-    [143]="1"
-    [587]="1"
-    [990]="1"
-    [993]="1"
-    [443]="1"
-    [2008]="1"
-    [10011]="1"
-    [30033]="1"
-    [41144]="1")'
-
-
-
 
 	read -p "Are you an expert? Please type y or n:" IAMEXPERT
 		if [ "$IAMEXPERT" = "y" ]; then
@@ -126,38 +91,38 @@ declare -A BLOCKED_PORTS='(
 	# ----------------------------------------------------------------
 	if [ "$IAMEXPERT" = "1" ]; then
 		read -p "Do you want choose and SSH Port? If you say \"No\" we generate a secure Port! Please type y or n:" CHOOSE_SSH_PORT
-		while true
-		do
-			if [ "$CHOOSE_SSH_PORT" = "y" ]; then
-				while true
-				do
-					read -p "Enter your SSH Port (only max. 3 numbers!):" CHOOSE_OWN_SSH_PORT
-					if [[ ${CHOOSE_OWN_SSH_PORT} =~ ^-?[0-9]+$ ]]; then
-						if [[ -v BLOCKED_PORTS[$CHOOSE_OWN_SSH_PORT] ]]; then
-							echo "$CHOOSE_OWN_SSH_PORT is known. Choose an other Port!"
-						else
-							#You can use this Port
-							echo "[Finishd] Your SSH Port is: $CHOOSE_OWN_SSH_PORT"
-							# Todo
-							# Mybe its better to set the port direct. At them moment we set him in firewall script
-							sed -i "s/SSH_PORT=\"generateport\"/SSH_PORT=\"$CHOOSE_OWN_SSH_PORT\"/g" ~/configs/userconfig.cfg
-							break
-						fi
+		if [[ "$CHOOSE_SSH_PORT" = "y" ]]; then
+			while true
+			do
+				read -p "Enter your SSH Port (only max. 3 numbers!):" CHOOSE_OWN_SSH_PORT
+				if [[ ${CHOOSE_OWN_SSH_PORT} =~ ^-?[0-9]+$ ]]; then
+						
+					if [[ -v BLOCKED_PORTS[$CHOOSE_OWN_SSH_PORT] ]]; then
+						echo "$CHOOSE_OWN_SSH_PORT is known. Choose an other Port!"
+					else
+						#You can use this Port
+						echo "[Finishd] Your SSH Port is: $CHOOSE_OWN_SSH_PORT"
+						# Todo
+						# Mybe its better to set the port direct. At them moment we set him in firewall script
+						#sed -i "s/SSH_PORT=\"generateport\"/SSH_PORT=\"$CHOOSE_OWN_SSH_PORT\"/g" ~/configs/userconfig.cfg
+						break
 					fi
-				done
-			elif [ "$CHOOSE_SSH_PORT"="n" ]; then
-				#Generate SSH Port
-				randomNumber="$(($RANDOM % 1023))"
-				#return a string
-				SSH_PORT=$([[ ! -n "${BLOCKED_PORTS["$randomNumber"]}" ]] && printf "%s\n" "$randomNumber")
-				sed -i "s/SSH_PORT=\"generateport\"/SSH_PORT=\"$SSH_PORT\"/g" ~/configs/userconfig.cfg
-				echo "[Finishd] Your SSH Port is: $SSH_PORT"
-							
-			else
-				echo "Y or N .....and again bro...."
-			fi
-		done
-		
+						
+				else
+				echo "Maybe you do not know what a number is?"
+				fi
+			done
+		elif [[ "$CHOOSE_SSH_PORT"="n" ]]; then
+			#Generate SSH Port
+			randomNumber="$(($RANDOM % 1023))"
+			#return a string
+			SSH_PORT=$([[ ! -n "${BLOCKED_PORTS["$randomNumber"]}" ]] && printf "%s\n" "$randomNumber")
+			#sed -i "s/SSH_PORT=\"generateport\"/SSH_PORT=\"$SSH_PORT\"/g" ~/configs/userconfig.cfg
+			echo "[Finishd] Your SSH Port is: $SSH_PORT"
+						
+		else
+			echo "Y or N .....and again bro...."
+		fi
 	fi
 		
 
@@ -774,6 +739,9 @@ confighelper_userconfig
 confighelper_addonconfig
 
 }
+
+
+source ~/scripts/security.sh
 
 #Run on install.sh
 #confighelper
