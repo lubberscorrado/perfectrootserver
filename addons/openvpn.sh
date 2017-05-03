@@ -35,7 +35,7 @@ openvpn() {
 #OpenVPN
 if [ ${USE_OPENVPN} == '1' ]; then
 echo "${info} Installing OPENVPN..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-apt-get -qq update && apt-get -q -y --force-yes install openvpn easy-rsa >>"$main_log" 2>>"$err_log"
+apt-get -q -y --force-yes install openvpn easy-rsa >>"$main_log" 2>>"$err_log"
 gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf
 
 sed -i 's|dh dh1024.pem|dh dh2048.pem|' /etc/openvpn/server.conf
@@ -46,7 +46,7 @@ sed -i 's|;user nobody|user nobody|' /etc/openvpn/server.conf
 sed -i 's|;group nogroup|group nogroup|' /etc/openvpn/server.conf
 
 echo 1 > /proc/sys/net/ipv4/ip_forward
-sed -i 's|#net.ipv4.ip_forward=1|net.ipv4.ip_forward=1|' /etc/sysctl.conf
+sed -i 's|net.ipv4.ip_forward=0|net.ipv4.ip_forward=1|' /etc/sysctl.conf
 
 #firewall port needs to be opened + forward
 
