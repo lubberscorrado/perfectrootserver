@@ -25,7 +25,7 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 
-
+source ~/security.sh
 
 confighelper_installs() {
 if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
@@ -46,36 +46,6 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 
 
 	echo "Start Confighelper for Userconfig"
-	#Userconfig
-	CONFIG_COMPLETED="0"
-	TIMEZONE="Europe/Berlin"
-	MYDOMAIN="domain.tld"
-	USE_VALID_SSL="1"
-	SSLMAIL="user@yourEmail.tld"
-	USE_MAILSERVER="1"
-	USE_WEBMAIL="1"
-	USE_PHP5="0"
-	USE_PHP7="1"
-	USE_PMA="1"
-	PMA_RESTRICT="0"
-	SSH_PORT="generateport"
-	SSH_PASS="generatepw"
-	ALLOWHTTPCONNECTIONS="0"
-	CLOUDFLARE="0"
-	HIGH_SECURITY="0"
-	DEBUG_IS_SET="0"
-	POSTFIX_ADMIN_PASS="generatepw"
-	VIMB_MYSQL_PASS="generatepw"
-	ROUNDCUBE_MYSQL_PASS="generatepw"
-	PMA_HTTPAUTH_USER="httpauth"
-	PMA_HTTPAUTH_PASS="generatepw"
-	PMA_BFSECURE_PASS="generatepw"
-	MYSQL_ROOT_PASS="generatepw"
-	MYSQL_PMADB_NAME="phpmyadmin"
-	MYSQL_PMADB_USER="phpmyadmin"
-	MYSQL_PMADB_PASS="generatepw"
-	MYSQL_HOSTNAME="localhost"
-	IAMEXPERT="0"
 
 	read -p "Are you an expert? Please type y or n:" IAMEXPERT
 		if [ "$IAMEXPERT" = "y" ]; then
@@ -87,7 +57,7 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 			IAMEXPERT="0"
 			echo "[Finishd] You are normal user"
 		fi
-		
+
 	# ----------------------------------------------------------------
 	if [ "$IAMEXPERT" = "1" ]; then
 		read -p "Do you want choose and SSH Port? If you say \"No\" we generate a secure Port! Please type y or n:" CHOOSE_SSH_PORT
@@ -96,18 +66,19 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 			do
 				read -p "Enter your SSH Port (only max. 3 numbers!):" CHOOSE_OWN_SSH_PORT
 				if [[ ${CHOOSE_OWN_SSH_PORT} =~ ^-?[0-9]+$ ]]; then
-						
+
 					if [[ -v BLOCKED_PORTS[$CHOOSE_OWN_SSH_PORT] ]]; then
 						echo "$CHOOSE_OWN_SSH_PORT is known. Choose an other Port!"
 					else
 						#You can use this Port
 						echo "[Finishd] Your SSH Port is: $CHOOSE_OWN_SSH_PORT"
+						SSH_PORT="$CHOOSE_OWN_SSH_PORT"
 						# Todo
 						# Mybe its better to set the port direct. At them moment we set him in firewall script
 						#sed -i "s/SSH_PORT=\"generateport\"/SSH_PORT=\"$CHOOSE_OWN_SSH_PORT\"/g" ~/configs/userconfig.cfg
 						break
 					fi
-						
+
 				else
 				echo "Maybe you do not know what a number is?"
 				fi
@@ -119,13 +90,21 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 			SSH_PORT=$([[ ! -n "${BLOCKED_PORTS["$randomNumber"]}" ]] && printf "%s\n" "$randomNumber")
 			#sed -i "s/SSH_PORT=\"generateport\"/SSH_PORT=\"$SSH_PORT\"/g" ~/configs/userconfig.cfg
 			echo "[Finishd] Your SSH Port is: $SSH_PORT"
-						
+
 		else
 			echo "Y or N .....and again bro...."
 		fi
 	fi
-		
-
+	
+	if [ "$IAMEXPERT" = "0" ]; then
+		#Generate SSH Port
+		randomNumber="$(($RANDOM % 1023))"
+		#return a string
+		SSH_PORT=$([[ ! -n "${BLOCKED_PORTS["$randomNumber"]}" ]] && printf "%s\n" "$randomNumber")
+		#sed -i "s/SSH_PORT=\"generateport\"/SSH_PORT=\"$SSH_PORT\"/g" ~/configs/userconfig.cfg
+		echo "[Finishd] Your SSH Port is: $SSH_PORT"
+	fi
+	
 	# ----------------------------------------------------------------
 	timezones="
 	Europe/Berlin
@@ -192,6 +171,7 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 
 		if [ "$USE_MAILSERVER" = "n" ]; then
 			USE_MAILSERVER="0"
+			USE_WEBMAIL="0"
 			echo "[Finishd] You dont use Mailserver"
 		fi
 
@@ -292,17 +272,23 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 				echo "[Finishd] You dont use Debug Mode"
 			fi
 	fi
+
+	if [ "$IAMEXPERT" = "0" ]; then
+		# If no expert, we set default values
+		CLOUDFLARE="0"
+		HIGH_SECURITY="0"
+		DEBUG_IS_SET="0"
+	fi
 	# ----------------------------------------------------------------
 	NEED_ADDONCONFIG="1"
 	read -p "Do You need Addonconfig? Please type y or n:" NEED_ADDONCONFIG
 		if [ "$NEED_ADDONCONFIG" = "y" ]; then
-			NEED_ADDONCONFIG="1"
+			ADDONCONFIG_COMPLETED="0"
 
 		fi
 
 		if [ "$NEED_ADDONCONFIG" = "n" ]; then
-			NEED_ADDONCONFIG="0"
-			ADDONCONFIG_COMPLETED="0"
+			ADDONCONFIG_COMPLETED="1"
 			echo "[Finishd] All is done!"
 		fi
 
@@ -317,6 +303,7 @@ cat >> ~/configs/userconfig.cfg <<END
 	CONFIG_COMPLETED="${CONFIG_COMPLETED}"
 	TIMEZONE="${TIMEZONE}"
 	MYDOMAIN="${MYDOMAIN}"
+	SSH_PORT="${SSH_PORT}"
 	USE_VALID_SSL="${USE_VALID_SSL}"
 	SSLMAIL="${SSLMAIL}"
 	USE_MAILSERVER="${USE_MAILSERVER}"
@@ -332,13 +319,16 @@ cat >> ~/configs/userconfig.cfg <<END
 	PMA_HTTPAUTH_USER="${PMA_HTTPAUTH_USER}"
 	MYSQL_PMADB_NAME="${MYSQL_PMADB_NAME}"
 	MYSQL_PMADB_USER="${MYSQL_PMADB_USER}"
-	POSTFIX_ADMIN_PASS="generatepw"
-	VIMB_MYSQL_PASS="generatepw"
-	ROUNDCUBE_MYSQL_PASS="generatepw"
-	PMA_HTTPAUTH_PASS="generatepw"
-	PMA_BFSECURE_PASS="generatepw"
-	MYSQL_ROOT_PASS="generatepw"
-	MYSQL_PMADB_PASS="generatepw"
+
+	SSH_PASS="${SSH_PASS}"
+	POSTFIX_ADMIN_PASS="${POSTFIX_ADMIN_PASS}"
+	VIMB_MYSQL_PASS="${VIMB_MYSQL_PASS}"
+	ROUNDCUBE_MYSQL_PASS="${ROUNDCUBE_MYSQL_PASS}"
+	PMA_HTTPAUTH_PASS="${PMA_HTTPAUTH_PASS}"
+	PMA_BFSECURE_PASS="${PMA_BFSECURE_PASS}"
+	MYSQL_ROOT_PASS="${MYSQL_ROOT_PASS}"
+	MYSQL_PMADB_PASS="${MYSQL_PMADB_PASS}"
+
 	MYSQL_HOSTNAME="localhost"
 #-----------------------------------------------------------#
 ############### Config File from Confighelper ###############
@@ -352,43 +342,6 @@ END
 
 confighelper_addonconfig() {
 echo "Start Confighelper for Addonconfig"
-
-ADDONCONFIG_COMPLETED="1"
-ADD_NEW_SITE="0"
-MYOTHERDOMAIN="MYOTHERDOMAIN.tld"
-DISABLE_ROOT_LOGIN="0"
-SSHUSER="YOURSSHUSER"
-USE_TEAMSPEAK="0"
-USE_MINECRAFT="0"
-USE_AJENTI="0"
-AJENTI_PASS="generatepw"
-USE_PIWIK="0"
-USE_VSFTPD="0"
-FTP_USERNAME="ftpsuperuser"
-USE_OPENVPN="0"
-KEY_COUNTRY="0" 	#(Example: DE for Germany)
-KEY_PROVINCE="0"	#(Example: Hessen)
-KEY_CITY="0"		#(Example: Frankfurt)
-KEY_EMAIL="0"		#(Example: your@email)
-SERVER_IP="0"		#(Example 92.12.34.567)
-USE_PRESTASHOP="0"
-PRESTASHOP_VERSION="1.6.1.12"
-PRESTASHOPDOMAIN="domain.tld"
-PRESTASHOP_OWNER_FIRSTNAME="Perfect"
-PRESTASHOP_OWNER_LASTNAME="Rootserver"
-PRESTASHOP_OWNER_EMAIL="prestashop@perfectrootserver.de"
-PRESTASHOPS_NAME="perfectrootserver script"
-PRESTASHOP_INSTALL_FOLDER_NAME="CHANGEME"
-PRESTASHOP_LANGUAGE="de"
-PRESTASHOP_COUNTRY="de"
-PRESTASHOP_DB_SERVER="localhost"
-PRESTASHOP_TIMEZONE="berlin"
-PRESTASHOP_DB_CLEAR="1"
-PRESTASHOP_CREATE_DB="1"
-PRESTASHOP_SHOW_LICENSE="0"
-PRESTASHOP_NEWSLETTER="1"
-PRESTASHOP_SEND_EMAIL="1"
-ADDONCONFIG_COMPLETED="0"
 
 
 	# ----------------------------------------------------------------
@@ -495,7 +448,6 @@ ADDONCONFIG_COMPLETED="0"
 			USE_VSFTPD="0"
 			echo "[Finishd] You dont use VSFTPd"
 	fi
-
 	# ----------------------------------------------------------------
 	read -p "Do you want use OPENVPN? Please type y or n:" USE_OPENVPN
 	if [ "$USE_OPENVPN" = "y" ]; then
@@ -525,8 +477,6 @@ ADDONCONFIG_COMPLETED="0"
 		USE_OPENVPN="0"
 		echo "[Finishd] You dont use OPENVPN"
 	fi
-
-
 	# ----------------------------------------------------------------
 	# NOT READY!
 	# DO NOT USE PRESTASHOP!
@@ -671,8 +621,6 @@ ADDONCONFIG_COMPLETED="0"
 		echo "[Finishd] You dont use Prestashop E-Commerce System"
 	fi
 
-
-
 # Write Vars to Config file:
 
 rm -rf ~/configs/addonconfig.cfg
@@ -680,7 +628,6 @@ cat >> ~/configs/addonconfig.cfg <<END
 #-----------------------------------------------------------#
 ############### Config File from Confighelper ###############
 #-----------------------------------------------------------#
-
 ADDONCONFIG_COMPLETED="${CONFIG_COMPLETED}"
 ADD_NEW_SITE="${ADD_NEW_SITE}"
 MYOTHERDOMAIN="${MYOTHERDOMAIN}"
@@ -699,7 +646,6 @@ KEY_PROVINCE="${KEY_PROVINCE}"
 KEY_CITY="${KEY_CITY}"
 KEY_EMAIL="${KEY_EMAIL}"
 SERVER_IP="${SERVER_IP}"
-
 USE_PRESTASHOP="${USE_PRESTASHOP}"
 PRESTASHOP_VERSION="${PRESTASHOP_VERSION}"
 PRESTASHOPDOMAIN="${PRESTASHOPDOMAIN}"
@@ -720,32 +666,21 @@ PRESTASHOP_SEND_EMAIL="${PRESTASHOP_SEND_EMAIL}"
 PRESTASHOP_DB_NAME="${PRESTASHOP_DB_NAME}"
 PRESTASHOP_CRYPT_PRF="${PRESTASHOP_CRYPT_PRF}"
 PRESTASHOP_DB_ENGINE="${chooseengine}"
-
-
-
-
 #-----------------------------------------------------------#
 ############### Config File from Confighelper ###############
 #-----------------------------------------------------------#
 END
 }
 
-
 confighelper() {
 #Run functions
 confighelper_installs
-confighelper_passwords
+confighelper_generate_passwords
 confighelper_userconfig
-confighelper_addonconfig
-
+if [ "$ADDONCONFIG_COMPLETED" = "0" ]; then
+	confighelper_addonconfig
+fi
 }
 
-
-source ~/scripts/security.sh
-
-#Run on install.sh
-#confighelper
-
-
-#source ~/configs/userconfig.cfg
-#source ~/configs/addonconfig.cfg
+source ~/configs/userconfig.cfg
+source ~/configs/addonconfig.cfg
