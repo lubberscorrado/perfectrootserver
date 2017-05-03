@@ -24,12 +24,8 @@
 #################################
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
-
-source script/security.sh
 source script/functions.sh
 source script/checksystem.sh
-source script/checkconfig.sh
-source script/addoncheckconfig.sh
 source script/logininformation.sh
 source script/instructions.sh
 # Alpha
@@ -77,12 +73,11 @@ source script/firewall.sh
 # source addons/addnewsite.sh
 # source addons/addnewmysqluser.sh
 
+# Start Installation
+#----------------------------------------------------
 #Alpha!
 confighelper
-
 checksystem
-#checkconfig
-addoncheckconfig
 system
 mariadb
 bashinstall
