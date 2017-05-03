@@ -26,36 +26,53 @@
 #################################
 
 source ~/script/security.sh
-
+source ~/script/functions.sh
 confighelper_installs() {
+	echo
+	echo
+	echo "$(date +"[%T]") | $(textb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
+	echo "$(date +"[%T]") |  $(textb P) $(textb e) $(textb r) $(textb f) $(textb e) $(textb c) $(textb t)   $(textb R) $(textb o) $(textb o) $(textb t) $(textb s) $(textb e) $(textb r) $(textb v) $(textb e) $(textb r) "
+	echo "$(date +"[%T]") | $(textb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
+	echo
+	echo "$(date +"[%T]") | ${info} Welcome to the Perfect Rootserver installation!"
+	echo "$(date +"[%T]") | ${info} Please wait while the installer is preparing for the first use..."
+
+
+apt-get -qq update >>"$main_log" 2>>"$err_log"
+#-------------libcrack2
 if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
 	apt-get -y --force-yes install libcrack2 >>"$main_log" 2>>"$err_log"
 fi
-
-apt-get -qq update && apt-get -q -y --force-yes install openssl >>"$main_log" 2>>"$err_log"
+#-------------dnsutils
+if [ $(dpkg-query -l | grep dnsutils | wc -l) -ne 1 ]; then
+	apt-get -y --force-yes install dnsutils >>"$main_log" 2>>"$err_log" error_exit "Cannot install dnsutils! Aborting"
+fi
+#-------------openssl------TESTING
+if [ $(dpkg-query -l | grep openssl | wc -l) -ne 1 ]; then
+	apt-get install -f -y -t testing openssl >>"$main_log" 2>>"$err_log"
+fi
 }
 
 
 
 
 confighelper_userconfig() {
-#echo "${info} Start confighelper...." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+echo "${info} Start confighelper...." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
 # Small function...
 CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?\$"
 
-
-	echo "Start Confighelper for Userconfig"
+	echo "${info} Confighelper for userconfig" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
 	read -p "Are you an expert? Please type y or n:" IAMEXPERT
 		if [ "$IAMEXPERT" = "y" ]; then
 			IAMEXPERT="1"
-			echo "[Finishd] You are an Expert!"
+			echo "${finished} You are an Expert!"
 		fi
 
 		if [ "$IAMEXPERT" = "n" ]; then
 			IAMEXPERT="0"
-			echo "[Finishd] You are normal user"
+			echo "${finished} You are normal user"
 		fi
 
 	# ----------------------------------------------------------------
@@ -71,7 +88,7 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 						echo "$CHOOSE_OWN_SSH_PORT is known. Choose an other Port!"
 					else
 						#You can use this Port
-						echo "[Finishd] Your SSH Port is: $CHOOSE_OWN_SSH_PORT"
+						echo "${finished} Your SSH Port is: $CHOOSE_OWN_SSH_PORT"
 						SSH_PORT="$CHOOSE_OWN_SSH_PORT"
 						# Todo
 						# Mybe its better to set the port direct. At them moment we set him in firewall script
@@ -89,7 +106,7 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 			#return a string
 			SSH_PORT=$([[ ! -n "${BLOCKED_PORTS["$randomNumber"]}" ]] && printf "%s\n" "$randomNumber")
 			#sed -i "s/SSH_PORT=\"generateport\"/SSH_PORT=\"$SSH_PORT\"/g" ~/configs/userconfig.cfg
-			echo "[Finishd] Your SSH Port is: $SSH_PORT"
+			echo "${finished} Your SSH Port is: $SSH_PORT"
 
 		else
 			echo "Y or N .....and again bro...."
@@ -102,7 +119,7 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 		#return a string
 		SSH_PORT=$([[ ! -n "${BLOCKED_PORTS["$randomNumber"]}" ]] && printf "%s\n" "$randomNumber")
 		#sed -i "s/SSH_PORT=\"generateport\"/SSH_PORT=\"$SSH_PORT\"/g" ~/configs/userconfig.cfg
-		echo "[Finishd] Your SSH Port is: $SSH_PORT"
+		echo "${finished} Your SSH Port is: $SSH_PORT"
 	fi
 	
 	# ----------------------------------------------------------------
@@ -121,50 +138,50 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 			break;
 		fi
 	done
-	echo "[Finishd] Your Timezone is $choosetimezone"
+	echo "${finished} Your Timezone is $choosetimezone"
 	# ----------------------------------------------------------------
 
 	read -p "Enter your Domain without http://:" MYDOMAIN
-	echo "[Finishd] Your Domain is $MYDOMAIN"
+	echo "${finished} Your Domain is $MYDOMAIN"
 
 	# ----------------------------------------------------------------
 	read -p "Do you want to Use SSL? Please type y or n:" USE_VALID_SSL
 		if [ "$USE_VALID_SSL" = "y" ]; then
 			USE_VALID_SSL="1"
-			echo "[Finishd] You use SSL"
+			echo "${finished} You use SSL"
 
 				# --------------------------------
 					while true
 					do
 						read -p "Enter your valid E-Mail address: " SSLMAIL
 						if [[ "$SSLMAIL" =~ $CHECK_E_MAIL ]];then
-							echo "[Finishd] Your E-Mail address is $SSLMAIL"
+							echo "${finished} Your E-Mail address is $SSLMAIL"
 							break
 						else
-							echo "[ERROR] Should we again practice how an e-mail address looks?"
+							echo "${error} Should we again practice how an e-mail address looks?"
 						fi
 					done
 		fi
 
 		if [ "$USE_VALID_SSL" = "n" ]; then
 			USE_VALID_SSL="0"
-			echo "[Finishd] You dont use SSL"
+			echo "${finished} You dont use SSL"
 		fi
 	# ----------------------------------------------------------------
 	read -p "Do you want to Use Mailserver? Please type y or n:" USE_MAILSERVER
 		if [ "$USE_MAILSERVER" = "y" ]; then
 			USE_MAILSERVER="1"
-			echo "[Finishd] You use Mailserver"
+			echo "${finished} You use Mailserver"
 					# -------------------------------
 					read -p "Do you want to Use webmail? Please type y or n:" USE_WEBMAIL
 					if [ "$USE_WEBMAIL" = "y" ]; then
 						USE_WEBMAIL="1"
-						echo "[Finishd] You use Webmail"
+						echo "${finished} You use Webmail"
 					fi
 
 					if [ "$USE_WEBMAIL" = "n" ]; then
 						USE_WEBMAIL="0"
-						echo "[Finishd] You dont use Webmail"
+						echo "${finished} You dont use Webmail"
 					fi
 					# -------------------------------
 		fi
@@ -172,7 +189,7 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 		if [ "$USE_MAILSERVER" = "n" ]; then
 			USE_MAILSERVER="0"
 			USE_WEBMAIL="0"
-			echo "[Finishd] You dont use Mailserver"
+			echo "${finished} You dont use Mailserver"
 		fi
 
 	# ----------------------------------------------------------------
@@ -180,47 +197,47 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 		if [ "$USE_PHPVERSION" = "5" ]; then
 			USE_PHP5="1"
 			USE_PHP7="0"
-			echo "[Finishd] You use PHP-Version 5"
+			echo "${finished} You use PHP-Version 5"
 		fi
 
 		if [ "$USE_PHPVERSION" = "7" ]; then
 			USE_PHP7="1"
 			USE_PHP5="0"
-			echo "[Finishd] You use PHP-Version 7"
+			echo "${finished} You use PHP-Version 7"
 		fi
 	# ----------------------------------------------------------------
 	read -p "Do you want to Use PHPMyAdmin? Please type y or n:" USE_PMA
 		if [ "$USE_PMA" = "y" ]; then
 			USE_PMA="1"
-			echo "[Finishd] You use PHPMyAdmin"
+			echo "${finished} You use PHPMyAdmin"
 					# -------------------------------
 					read -p "Do you want to restrict PHPMyAdmin? Please type y or n:" PMA_RESTRICT
 					if [ "$PMA_RESTRICT" = "y" ]; then
 						PMA_RESTRICT="1"
-						echo "[Finishd] You use restricted pma Login"
+						echo "${finished} You use restricted pma Login"
 					fi
 
 					if [ "$PMA_RESTRICT" = "n" ]; then
 						PMA_RESTRICT="0"
-						echo "[Finishd] You dont use restricted pma Login"
+						echo "${finished} You dont use restricted pma Login"
 					fi
 					# -------------------------------
 		fi
 
 		if [ "$USE_PMA" = "n" ]; then
 			USE_PMA="0"
-			echo "[Finishd] You dont use PHPMyAdmin"
+			echo "${finished} You dont use PHPMyAdmin"
 		fi
 	# ----------------------------------------------------------------
 	read -p "Do you want allow http-connections? Please type y or n:" ALLOWHTTPCONNECTIONS
 		if [ "$ALLOWHTTPCONNECTIONS" = "y" ]; then
 			ALLOWHTTPCONNECTIONS="1"
-			echo "[Finishd] You allow http-connections"
+			echo "${finished} You allow http-connections"
 		fi
 
 		if [ "$ALLOWHTTPCONNECTIONS" = "n" ]; then
 			ALLOWHTTPCONNECTIONS="0"
-			echo "[Finishd] You dont allow http-connections"
+			echo "${finished} You dont allow http-connections"
 		fi
 
 	# ----------------------------------------------------------------
@@ -237,24 +254,24 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 		read -p "Do you want use Cloudflare? Please type y or n:" CLOUDFLARE
 			if [ "$CLOUDFLARE" = "y" ]; then
 				CLOUDFLARE="1"
-				echo "[Finishd] You use Cloudflare"
+				echo "${finished} You use Cloudflare"
 			fi
 
 			if [ "$CLOUDFLARE" = "n" ]; then
 				CLOUDFLARE="0"
-				echo "[Finishd] You dont use Cloudflare"
+				echo "${finished} You dont use Cloudflare"
 			fi
 	# ----------------------------------------------------------------
 		if [ "$ALLOWHTTPCONNECTIONS" = "0" ]; then
 			read -p "Do you want use HIGH SECURITY? Please type y or n:" HIGH_SECURITY
 				if [ "$HIGH_SECURITY" = "y" ]; then
 					HIGH_SECURITY="1"
-					echo "[Finishd] You use HIGH SECURITY"
+					echo "${finished} You use HIGH SECURITY"
 				fi
 
 				if [ "$HIGH_SECURITY" = "n" ]; then
 					HIGH_SECURITY="0"
-					echo "[Finishd] You dont use HIGH SECURITY"
+					echo "${finished} You dont use HIGH SECURITY"
 				fi
 
 		else
@@ -264,12 +281,12 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 		read -p "Do you want use Debug Mode? Please type y or n:" DEBUG_IS_SET
 			if [ "$DEBUG_IS_SET" = "y" ]; then
 				DEBUG_IS_SET="1"
-				echo "[Finishd] You use Debug Mode"
+				echo "${finished} You use Debug Mode"
 			fi
 
 			if [ "$DEBUG_IS_SET" = "n" ]; then
 				DEBUG_IS_SET="0"
-				echo "[Finishd] You dont use Debug Mode"
+				echo "${finished} You dont use Debug Mode"
 			fi
 	fi
 
@@ -289,7 +306,7 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 
 		if [ "$NEED_ADDONCONFIG" = "n" ]; then
 			ADDONCONFIG_COMPLETED="1"
-			echo "[Finishd] All is done!"
+			echo "${finished} All is done!"
 		fi
 
 
@@ -348,54 +365,54 @@ echo "Start Confighelper for Addonconfig"
 	read -p "Do you want to Add a new Site? Please type y or n:" ADD_NEW_SITE
 	if [ "$ADD_NEW_SITE" = "y" ]; then
 			ADD_NEW_SITE="1"
-			echo "[Finishd] You want to add a new Site."
+			echo "${finished} You want to add a new Site."
 				# --------------------------------
 				read -p "Please Type your Domain without http://www.:" MYOTHERDOMAIN
-				echo "[Finishd] Your second Domain is: $MYOTHERDOMAIN"
+				echo "${finished} Your second Domain is: $MYOTHERDOMAIN"
 	fi
 
 	if [ "$ADD_NEW_SITE" = "n" ]; then
 			MYOTHERDOMAIN="0"
-			echo "[Finishd] You dont add a new site"
+			echo "${finished} You dont add a new site"
 	fi
 
 	# ----------------------------------------------------------------
 	read -p "Do you want to disable root Login? Please type y or n:" DISABLE_ROOT_LOGIN
 	if [ "$DISABLE_ROOT_LOGIN" = "y" ]; then
 			DISABLE_ROOT_LOGIN="1"
-			echo "[Finishd] You want to disable root login."
+			echo "${finished} You want to disable root login."
 				# --------------------------------
 				read -p "Please Type your new SSH User:" SSHUSER
-				echo "[Finishd] Your new SSH USer is: $SSHUSER"
+				echo "${finished} Your new SSH USer is: $SSHUSER"
 	fi
 
 	if [ "$DISABLE_ROOT_LOGIN" = "n" ]; then
 			DISABLE_ROOT_LOGIN="0"
-			echo "[Finishd] You dont disable root Login. Your User to login is: root"
+			echo "${finished} You dont disable root Login. Your User to login is: root"
 	fi
 
 	# ----------------------------------------------------------------
 	read -p "Do you want use TeamSpeak? Please type y or n:" USE_TEAMSPEAK
 	if [ "$USE_TEAMSPEAK" = "y" ]; then
 			USE_TEAMSPEAK="1"
-			echo "[Finishd] You install Teamspeack."
+			echo "${finished} You install Teamspeack."
 	fi
 
 	if [ "$USE_TEAMSPEAK" = "n" ]; then
 			USE_TEAMSPEAK="0"
-			echo "[Finishd] You dont use Teamspeak"
+			echo "${finished} You dont use Teamspeak"
 	fi
 
 	# ----------------------------------------------------------------
 	read -p "Do you want use Minecraft? Please type y or n:" USE_MINECRAFT
 	if [ "$USE_MINECRAFT" = "y" ]; then
 			USE_MINECRAFT="1"
-			echo "[Finishd] You install Minecraft."
+			echo "${finished} You install Minecraft."
 	fi
 
 	if [ "$USE_MINECRAFT" = "n" ]; then
 			USE_MINECRAFT="0"
-			echo "[Finishd] You dont use Minecraft"
+			echo "${finished} You dont use Minecraft"
 	fi
 
 	# ----------------------------------------------------------------
@@ -404,12 +421,12 @@ echo "Start Confighelper for Addonconfig"
 		read -p "Do you want use Ajenti? Please type y or n:" USE_AJENTI
 			if [ "$USE_AJENTI" = "y" ]; then
 			USE_AJENTI="1"
-			echo "[Finishd] You install Ajenti."
+			echo "${finished} You install Ajenti."
 		fi
 
 		if [ "$USE_AJENTI" = "n" ]; then
 				USE_AJENTI="0"
-				echo "[Finishd] You dont use Ajenti"
+				echo "${finished} You dont use Ajenti"
 		fi
 
 	fi
@@ -418,25 +435,25 @@ echo "Start Confighelper for Addonconfig"
 	read -p "Do you want use Piwik? Please type y or n:" USE_PIWIK
 	if [ "$USE_PIWIK" = "y" ]; then
 			USE_PIWIK="1"
-			echo "[Finishd] You install Piwik."
+			echo "${finished} You install Piwik."
 	fi
 
 	if [ "$USE_PIWIK" = "n" ]; then
 			USE_PIWIK="0"
-			echo "[Finishd] You dont use Piwik"
+			echo "${finished} You dont use Piwik"
 	fi
 
 	# ----------------------------------------------------------------
 	read -p "Do you want use VSFTPd? Please type y or n:" USE_VSFTPD
 	if [ "$USE_VSFTPD" = "y" ]; then
 			USE_VSFTPD="1"
-			echo "[Finishd] You install VSFTPd."
+			echo "${finished} You install VSFTPd."
 				# --------------------------------
 					while true
 					do
 						read -p "Please type your ftp User. Use only a-z!:" FTP_USERNAME
 						if [[ $FTP_USERNAME =~ ^[a-z]+$ ]]; then
-							echo "[Finishd] Your FTP USername is $FTP_USERNAME."
+							echo "${finished} Your FTP USername is $FTP_USERNAME."
 							break
 						else
 							echo "[Big Error] Should we perhaps learn something about lowercase letters?"
@@ -446,13 +463,13 @@ echo "Start Confighelper for Addonconfig"
 
 	if [ "$USE_VSFTPD" = "n" ]; then
 			USE_VSFTPD="0"
-			echo "[Finishd] You dont use VSFTPd"
+			echo "${finished} You dont use VSFTPd"
 	fi
 	# ----------------------------------------------------------------
 	read -p "Do you want use OPENVPN? Please type y or n:" USE_OPENVPN
 	if [ "$USE_OPENVPN" = "y" ]; then
 		USE_OPENVPN="1"
-		echo "[Finishd] You use OPENVPN"
+		echo "${finished} You use OPENVPN"
 			# --------------------------------
 			SERVER_IP=$(ip route get 8.8.8.8 | head -1 | cut -d' ' -f8)
 
@@ -460,10 +477,10 @@ echo "Start Confighelper for Addonconfig"
 			do
 				read -p "Enter your valid E-Mail address: " KEY_EMAIL
 				if [[ "$KEY_EMAIL" =~ $CHECK_E_MAIL ]];then
-					echo "[Finishd] Your E-Mail address is $KEY_EMAIL"
+					echo "${finished} Your E-Mail address is $KEY_EMAIL"
 					break
 				else
-					echo "[ERROR] Should we again practice how an e-mail address looks?"
+					echo "${error} Should we again practice how an e-mail address looks?"
 				fi
 			done
 
@@ -475,7 +492,7 @@ echo "Start Confighelper for Addonconfig"
 
 	if [ "$USE_OPENVPN" = "n" ]; then
 		USE_OPENVPN="0"
-		echo "[Finishd] You dont use OPENVPN"
+		echo "${finished} You dont use OPENVPN"
 	fi
 	# ----------------------------------------------------------------
 	# NOT READY!
@@ -485,7 +502,7 @@ echo "Start Confighelper for Addonconfig"
 		USE_PRESTASHOP="n"
 	if [ "$USE_PRESTASHOP" = "y" ]; then
 		USE_PRESTASHOP="1"
-		echo "[Finishd] You use Prestashop E-Commerce System"
+		echo "${finished} You use Prestashop E-Commerce System"
 			# --------------------------------
 			PRESTASHOP_VERSION="1.6.1.12"
 			PRESTASHOPDOMAIN="domain.tld"
@@ -515,12 +532,12 @@ echo "Start Confighelper for Addonconfig"
 			read -p "Do you want clear DB? Please type y or n:" PRESTASHOP_DB_CLEAR
 			if [ "$PRESTASHOP_DB_CLEAR" = "y" ]; then
 				PRESTASHOP_DB_CLEAR="1"
-				echo "[Finishd] Deleting the database"
+				echo "${finished} Deleting the database"
 			fi
 
 			if [ "$PRESTASHOP_DB_CLEAR" = "n" ]; then
 				PRESTASHOP_DB_CLEAR="0"
-				echo "[Finishd] Deleting no database"
+				echo "${finished} Deleting no database"
 			fi
 
 			# --------------------------------
@@ -537,7 +554,7 @@ echo "Start Confighelper for Addonconfig"
 					break;
 				fi
 			done
-			echo "[Finishd] Your Timezone is $choosetimezone"
+			echo "${finished} Your Timezone is $choosetimezone"
 
 
 			# --------------------------------
@@ -548,7 +565,7 @@ echo "Start Confighelper for Addonconfig"
 			MyISAM
 			"
 			read -p "Please choose an Praefix:" PRESTASHOP_CRYPT_PRF
-			echo "[Finishd] Your new DB Praefix is $PRESTASHOP_CRYPT_PRF"
+			echo "${finished} Your new DB Praefix is $PRESTASHOP_CRYPT_PRF"
 
 			# --------------------------------
 			echo "Please choose an DB engine"
@@ -561,56 +578,56 @@ echo "Start Confighelper for Addonconfig"
 					break;
 				fi
 			done
-			echo "[Finishd] Your Timezone is $chooseengine"
+			echo "${finished} Your Timezone is $chooseengine"
 
 			# --------------------------------
 			read -p "Do you want create an Database (It is recommended)? Please type y or n:" PRESTASHOP_CREATE_DB
 			if [ "$PRESTASHOP_CREATE_DB" = "y" ]; then
 				PRESTASHOP_CREATE_DB="1"
-				echo "[Finishd] You create an new Database."
+				echo "${finished} You create an new Database."
 					# --------------------------------
 					read -p "Please type your DB name. Please type y or n:" PRESTASHOP_DB_NAME
 			fi
 
 			if [ "$PRESTASHOP_CREATE_DB" = "n" ]; then
 				PRESTASHOP_CREATE_DB="0"
-				echo "[Finishd] You dont create an new Database."
+				echo "${finished} You dont create an new Database."
 			fi
 
 			# --------------------------------
 			read -p "Do you want to show the license from Prestashops E-Commerce System? Please type y or n:" PRESTASHOP_SHOW_LICENSE
 			if [ "$PRESTASHOP_SHOW_LICENSE" = "y" ]; then
 				PRESTASHOP_SHOW_LICENSE="1"
-				echo "[Finishd] You see the license"
+				echo "${finished} You see the license"
 			fi
 
 			if [ "$PRESTASHOP_SHOW_LICENSE" = "n" ]; then
 				PRESTASHOP_SHOW_LICENSE="0"
-				echo "[Finishd] You dont see the license"
+				echo "${finished} You dont see the license"
 			fi
 
 			# --------------------------------
 			read -p "Du you want subscribe your own Newsletter? Please type y or n:" PRESTASHOP_NEWSLETTER
 			if [ "$PRESTASHOP_NEWSLETTER" = "y" ]; then
 				PRESTASHOP_NEWSLETTER="1"
-				echo "[Finishd] You subscribe your Newsletter"
+				echo "${finished} You subscribe your Newsletter"
 			fi
 
 			if [ "$PRESTASHOP_NEWSLETTER" = "n" ]; then
 				PRESTASHOP_NEWSLETTER="0"
-				echo "[Finishd] You dont subscribe your Newsletter"
+				echo "${finished} You dont subscribe your Newsletter"
 			fi
 
 			# --------------------------------
 			read -p "Do you wish an E-Mail after Setup? Please type y or n:" PRESTASHOP_SEND_EMAIL
 			if [ "$PRESTASHOP_SEND_EMAIL" = "y" ]; then
 				PRESTASHOP_SEND_EMAIL="1"
-				echo "[Finishd] You become an E-Mail after installation"
+				echo "${finished} You become an E-Mail after installation"
 			fi
 
 			if [ "$PRESTASHOP_SEND_EMAIL" = "n" ]; then
 				PRESTASHOP_SEND_EMAIL="0"
-				echo "[Finishd] You become no E-Mail after installation"
+				echo "${finished} You become no E-Mail after installation"
 			fi
 			# --------------------------------
 
@@ -618,7 +635,7 @@ echo "Start Confighelper for Addonconfig"
 
 	if [ "$USE_PRESTASHOP" = "n" ]; then
 		USE_PRESTASHOP="0"
-		echo "[Finishd] You dont use Prestashop E-Commerce System"
+		echo "${finished} You dont use Prestashop E-Commerce System"
 	fi
 
 # Write Vars to Config file:
