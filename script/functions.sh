@@ -43,6 +43,7 @@ warn="$(yellowb [WARN] -)"
 error="$(redb [ERROR] -)"
 fyi="$(pinkb [INFO] -)"
 ok="$(greenb [OKAY] -)"
+Finishd="$(greenb [Finishd] -)"
 
 IPADR=$(ip route get 8.8.8.8 | head -1 | cut -d' ' -f8)
 INTERFACE=$(ip route get 8.8.8.8 | head -1 | cut -d' ' -f5)
