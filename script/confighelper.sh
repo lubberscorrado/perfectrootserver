@@ -25,7 +25,7 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 
-source ~/security.sh
+source ~/script/security.sh
 
 confighelper_installs() {
 if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
