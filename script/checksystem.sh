@@ -26,27 +26,7 @@
 #################################
 
 checksystem() {
-	echo
-	echo
-	echo "$(date +"[%T]") | $(textb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
-	echo "$(date +"[%T]") |  $(textb P) $(textb e) $(textb r) $(textb f) $(textb e) $(textb c) $(textb t)   $(textb R) $(textb o) $(textb o) $(textb t) $(textb s) $(textb e) $(textb r) $(textb v) $(textb e) $(textb r) "
-	echo "$(date +"[%T]") | $(textb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
-	echo
-	echo "$(date +"[%T]") | ${info} Welcome to the Perfect Rootserver installation!"
-	echo "$(date +"[%T]") | ${info} Please wait while the installer is preparing for the first use..."
-	
 	####cd /asddf/userconfig.cfg || error_exit "Cannot change directory! Aborting" #####
-	
-	apt-get update -y >>"$main_log" 2>>"$err_log"
-
-	if [ $(dpkg-query -l | grep dnsutils | wc -l) -ne 1 ]; then
-		 apt-get -y --force-yes install dnsutils >>"$main_log" 2>>"$err_log" error_exit "Cannot install dnsutils! Aborting"
-	fi
-
-	if [ $(dpkg-query -l | grep openssl | wc -l) -ne 1 ]; then
-		apt-get install -f -y -t testing openssl >>"$main_log" 2>>"$err_log"
-	fi
-
 	echo "$(date +"[%T]") | ${info} Checking your system..."
 
 	if [ $(dpkg-query -l | grep gawk | wc -l) -ne 1 ]; then
