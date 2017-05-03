@@ -78,11 +78,10 @@ source script/firewall.sh
 # source addons/addnewmysqluser.sh
 
 #Alpha!
-#confighelper
+confighelper
 
-createpw
 checksystem
-checkconfig
+#checkconfig
 addoncheckconfig
 system
 mariadb
