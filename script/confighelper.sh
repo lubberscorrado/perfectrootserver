@@ -31,6 +31,7 @@
 
 source ~/script/security.sh
 source ~/script/functions.sh
+CONFIGHELPER_PATH="/root"
 ##############CONFIGHELPER INSTALLERS
 confighelper_installs() {
 	echo
@@ -423,7 +424,7 @@ echo "Start Confighelper for Addonconfig"
 	# DO NOT USE PRESTASHOP with confighelper!
 	# ---------------------------------------------------------------#
 		#read -p "Do you want use Prestashop E-Commerce System? Please type y or n:" USE_PRESTASHOP
-		USE_PRESTASHOP="n"
+		USE_PRESTASHOP="0"
 	#~ if [ "$USE_PRESTASHOP" = "y" ]; then
 		#~ USE_PRESTASHOP="1"
 		#~ echo "${finished} You use Prestashop E-Commerce System"
