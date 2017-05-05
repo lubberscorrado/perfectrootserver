@@ -61,6 +61,38 @@ err_log="/root/logs/error.log"
 make_log="/root/logs/make.log"
 make_err_log="/root/logs/make_error.log"
 
+# Check valid E-Mail
+CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?\$"
+
+# Date!
+CURRENT_DATE=`date +%Y-%m-%d:%H:%M:%S`
+
+# My promp function :)
+prompt_confirm() {
+  while true; do
+    read -r -n 1 -p "${1:-Continue?} [y/n]: " REPLY
+    case $REPLY in
+      [yY]) echo ; return 0 ;;
+      [nN]) echo ; return 1 ;;
+      *) printf " \033[31m %s \n\033[0m" "Invalid input"
+    esac
+  done
+}
+
+# Quick and dirty
+# Fix me
+prompt_confirm_two() {
+  while true; do
+    read -r -n 1 -p "${1:-Continue?} [5/7]: " REPLY
+    case $REPLY in
+      [5]) echo ; return 0 ;;
+      [7]) echo ; return 1 ;;
+      *) printf " \033[31m %s \n\033[0m" "Invalid input"
+    esac
+  done
+}
+
+
 error_exit()
 {
 	echo "$1" 1>&2
