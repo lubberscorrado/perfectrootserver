@@ -25,6 +25,10 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 
+# Known issues
+# Prestashop not working
+# DNS CHECK NOT WORKING!
+
 source ~/script/security.sh
 source ~/script/functions.sh
 ##############CONFIGHELPER INSTALLERS
@@ -37,7 +41,7 @@ confighelper_installs() {
 	echo
 	echo "$(date +"[%T]") | ${info} Welcome to the Perfect Rootserver installation!"
 	echo "$(date +"[%T]") | ${info} Please wait while the installer is preparing for the first use..."
-	
+
 apt-get -qq update >>"$main_log" 2>>"$err_log"
 #-------------libcrack2
 if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
@@ -224,16 +228,16 @@ echo "Start Confighelper for Userconfig"
 		fi
 		# ----------------------------------------------------------------
 		if [ "$ALLOWHTTPCONNECTIONS" = "0" ]; then
-					if prompt_confirm "Do you want use HIGH SECURITY?" ; then
+			# ----------------------------------------------------------------
+			if prompt_confirm "Do you want use HIGH SECURITY?" ; then
 				HIGH_SECURITY="1"
 				echo "${finished} You use HIGH SECURITY"
 			else
 				HIGH_SECURITY="0"
 				echo "${finished} You dont use HIGH SECURITY"
 			fi
-		fi
 		else
-		HIGH_SECURITY="0"
+			HIGH_SECURITY="0"
 		fi
 		# ----------------------------------------------------------------
 		if prompt_confirm "Do you want use Debug Mode?" ; then
