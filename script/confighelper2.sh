@@ -61,18 +61,42 @@ fi
 confighelper_userconfig() {
 #echo "${info} Start confighelper...." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
+BACKTITLE="Perfect Root Server Installation"
+TITLE="Perfect Root Server Installation"			
+				
 echo "Start Confighelper for Userconfig"
 
-		if prompt_confirm "Are you an expert?" ; then
+HEIGHT=30
+WIDTH=60
+CHOICE_HEIGHT=2
+MENU="Are you an expert?:"
+
+OPTIONS=(1 "Yes"
+         2 "No")
+
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)		 
+		 
+clear
+case $CHOICE in
+        1)
 			IAMEXPERT="1"
-			echo "${finished} You are an Expert!"
-		else
+            echo "${finished} You are an Expert!"
+            ;;
+        2)
 			IAMEXPERT="0"
-			echo "${finished} You are normal user"
-		fi
+            echo "${finished} You are normal user"
+            ;;
+esac
+           	
 	# ----------------------------------------------------------------
 	if [ "$IAMEXPERT" = "1" ]; then
-		if prompt_confirm "Do you want choose and SSH Port? If you say \"No\" we generate a secure Port!"; then
+	if prompt_confirm "Do you want choose and SSH Port? If you say \"No\" we generate a secure Port!"; then
 			while true
 			do
 				read -p "Enter your SSH Port (only max. 3 numbers!):" CHOOSE_OWN_SSH_PORT
@@ -113,35 +137,94 @@ echo "Start Confighelper for Userconfig"
 		echo "${finished} Your SSH Port is: $SSH_PORT"
 	fi
 	# ----------------------------------------------------------------
-	timezones="
-	Europe/Berlin
-	America/New_York
-	"
-	select choosetimezone in $timezones; do
-		if [ "$choosetimezone" = "Europe/Berlin" ]; then
-		TIMEZONE="$choosetimezone"
-			break;
-		fi
+HEIGHT=30
+WIDTH=60
+CHOICE_HEIGHT=6
+MENU="Choose a timezone:"
 
-		if [ "$choosetimezone" = "America/New_York" ]; then
-		TIMEZONE="$choosetimezone"
-			break;
-		fi
-	done
-	echo "${finished} Your Timezone is $choosetimezone"
+OPTIONS=(1 "Europe/Berlin"
+		 2 "Europe/Moscow"
+		 3 "Australia/Sydney"
+		 4 "Asia/Tokyo"
+		 5 "America/Los_Angeles"
+		 6 "America/New_York")
+
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)		 
+		 
+clear
+case $CHOICE in
+        1)
+			TIMEZONE="Europe/Berlin"
+            echo "${finished} Your Timezone is Europe/Berlin"
+            ;;
+		2)
+			TIMEZONE="Europe/Moscow"
+			echo "${finished} Your Timezone is Europe/Moscow"
+            ;;		
+		3)
+			TIMEZONE="Australia/Sydney"
+			echo "${finished} Your Timezone is Australia/Sydney"
+            ;;		
+		4)
+			TIMEZONE="Asia/Tokyo"
+			echo "${finished} Your Timezone is Asia/Tokyo"
+            ;;		
+		5)
+			TIMEZONE="America/Los_Angeles"
+			echo "${finished} Your Timezone is America/Los_Angeles"
+            ;;	
+        6)
+			TIMEZONE="America/New_York"
+			echo "${finished} Your Timezone is America/New_York"
+            ;;
+esac
+
 	# ----------------------------------------------------------------
 
 	# Todo
 	# Check valid Domain
 	# Maybe function from functions.sh ;)
-	read -p "Enter your Domain without http:// (exmaple.org):" MYDOMAIN
-	echo "${finished} Your Domain is $MYDOMAIN"
+	
+	HEIGHT=30
+	WIDTH=60
+
+	MYDOMAIN=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --inputbox "Enter your Domain without http:// (exmaple.org):" \
+                $HEIGHT $WIDTH \
+                3>&1 1>&2 2>&3 3>&- \
+	)				
+	echo "$MYDOMAIN"	
+	
 	# ----------------------------------------------------------------
-	if prompt_confirm "Do you want to Use SSL?" ; then
-		USE_VALID_SSL="1"
-		echo "${finished} You use SSL"
-				# --------------------------------
-				while true
+HEIGHT=30
+WIDTH=60
+CHOICE_HEIGHT=2
+MENU="Do you want to Use SSL?:"
+
+OPTIONS=(1 "Yes"
+         2 "No")
+
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)		 
+		 
+clear
+case $CHOICE in
+        1)
+			USE_VALID_SSL="1"
+            echo "${finished} You use SSL"
+			while true
 				do
 					read -p "Enter your valid E-Mail address: " SSLMAIL
 					if [[ "$SSLMAIL" =~ $CHECK_E_MAIL ]];then
@@ -150,106 +233,266 @@ echo "Start Confighelper for Userconfig"
 					else
 						echo "[ERROR] Should we again practice how an e-mail address looks?"
 					fi
-				done
-	else
-		USE_VALID_SSL="0"
-		echo "${finished} You dont use SSL"
-	fi
-	# ----------------------------------------------------------------
-	if prompt_confirm "Do you want to Use Mailserver?" ; then
-		USE_MAILSERVER="1"
-		echo "${finished} You use Mailserver"
-			# -------------------------------
-			if prompt_confirm "Do you want to Use webmail?" ; then
-				USE_WEBMAIL="1"
-				echo "${finished} You use Webmail"
-			else
-				USE_WEBMAIL="0"
-				echo "${finished} You dont use Webmail"
-			fi
-	else
-		USE_MAILSERVER="0"
-		USE_WEBMAIL="0"
-		echo "${finished} You dont use Mailserver"
-	fi
-	# ----------------------------------------------------------------
-	if prompt_confirm_two "Do you want to Use PHP5 oder PHP7?" ; then
-		USE_PHP5="1"
-		USE_PHP7="0"
-		echo "${finished} You use PHP-Version 5"
-	else
-		USE_PHP7="1"
-		USE_PHP5="0"
-		echo "${finished} You use PHP-Version 7"
-	fi
-
+			done
+            ;;
+        2)
+			USE_VALID_SSL="0"
+            echo "${finished} You dont use SSL"
+            ;;
+esac
 
 	# ----------------------------------------------------------------
-	if prompt_confirm "Do you want to Use PHPMyAdmin?" ; then
-		USE_PMA="1"
-		echo "${finished} You use PHPMyAdmin"
-			# -------------------------------
-			if prompt_confirm "Do you want to restrict PHPMyAdmin?" ; then
-				PMA_RESTRICT="1"
-				echo "${finished} You use restricted pma Login"
-			else
-				PMA_RESTRICT="0"
-				echo "${finished} You dont use restricted pma Login"
-			fi
-	else
-		USE_PMA="0"
-		echo "${finished} You dont use PHPMyAdmin"
-	fi
+HEIGHT=30
+WIDTH=60
+CHOICE_HEIGHT=3
+MENU="Do you want to Use Mailserver?:"
+
+OPTIONS=(1 "Yes"
+		 2 "Yes with Webmail"
+         3 "No")
+
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)		 
+		 
+clear
+case $CHOICE in
+        1)
+			USE_MAILSERVER="1"
+			echo "${finished} You use Mailserver"
+            ;;
+        2)
+			USE_MAILSERVER="1"
+			USE_WEBMAIL="1"
+            echo "${finished} You use Mailserver and Webmail"
+            ;;
+		3)
+			USE_MAILSERVER="0"
+			USE_WEBMAIL="0"
+            echo "${finished} You dont use Mailserver"
+            ;;
+esac
 	# ----------------------------------------------------------------
-	if prompt_confirm "Do you want allow http-connections?" ; then
-		ALLOWHTTPCONNECTIONS="1"
-		echo "${finished} You allow http-connections"
-	else
-		ALLOWHTTPCONNECTIONS="0"
-		echo "${finished} You dont allow http-connections"
-	fi
+HEIGHT=30
+WIDTH=60
+CHOICE_HEIGHT=2
+MENU="Do you want to Use PHP5 oder PHP7?:"
+
+OPTIONS=(1 "PHP 5"
+         2 "PHP 7")
+
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)		 
+		 
+clear
+case $CHOICE in
+        1)
+			USE_PHP5="1"
+			USE_PHP7="0"
+            echo "${finished} You use PHP-Version 5"
+            ;;
+        2)
+			USE_PHP7="1"
+			USE_PHP5="0"
+            echo "${finished} You use PHP-Version 7"
+            ;;
+esac
+	# ----------------------------------------------------------------
+HEIGHT=30
+WIDTH=60
+CHOICE_HEIGHT=3
+MENU="Do you want to Use PHPMyAdmin?:"
+
+OPTIONS=(1 "Yes"
+		 2 "Yes, but restrcited"
+         3 "No")
+
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)		 
+		 
+clear
+case $CHOICE in
+        1)
+			USE_PMA="1"
+            echo "${finished} You use PHPMyAdmin"
+            ;;
+        2)
+			USE_PMA="1"
+			PMA_RESTRICT="1"
+			echo "${finished} You use PHPMyAdmin with a restricted Login"
+            ;;
+		3)
+			USE_PMA="0"
+			PMA_RESTRICT="0"
+			echo "${finished} You dont use PHPMyAdmin"
+            ;;	
+esac
 
 	# ----------------------------------------------------------------
-	read -p "Please choose an user for HTTP-Auth login:" PMA_HTTPAUTH_USER
-	# ----------------------------------------------------------------
-	read -p "Please choose an user for MYSQL PHPMyAdmin Login:" MYSQL_PMADB_USER
-	# ----------------------------------------------------------------
-	read -p "Please choose an DB-Name for MYSQL PHPMyAdmin:" MYSQL_PMADB_NAME
+HEIGHT=30
+WIDTH=60
+CHOICE_HEIGHT=2
+MENU="Do you want allow http-connections?:"
 
+OPTIONS=(1 "Yes"
+         2 "No")
 
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)		 
+		 
+clear
+case $CHOICE in
+        1)
+			ALLOWHTTPCONNECTIONS="1"
+            echo "${finished} You allow http-connections"
+            ;;
+        2)
+			ALLOWHTTPCONNECTIONS="0"
+			echo "${finished} You dont allow http-connections"
+            ;;
+esac
 	# ----------------------------------------------------------------
-	if [ "$IAMEXPERT" = "1" ]; then
+	HEIGHT=30
+	WIDTH=60
+
+	PMA_HTTPAUTH_USER=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --inputbox "Please choose an user for HTTP-Auth login:" \
+                $HEIGHT $WIDTH \
+                3>&1 1>&2 2>&3 3>&- \
+	)				
+	echo "$PMA_HTTPAUTH_USER"
+	# ----------------------------------------------------------------
+	HEIGHT=30
+	WIDTH=60
+
+	MYSQL_PMADB_USER=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --inputbox "Please choose an user for MYSQL PHPMyAdmin Login:" \
+                $HEIGHT $WIDTH \
+                3>&1 1>&2 2>&3 3>&- \
+	)				
+	echo "$MYSQL_PMADB_USER"
+	# ----------------------------------------------------------------
+	HEIGHT=30
+	WIDTH=60
+
+	MYSQL_PMADB_NAME=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --inputbox "Please choose an DB-Name for MYSQL PHPMyAdmin:" \
+                $HEIGHT $WIDTH \
+                3>&1 1>&2 2>&3 3>&- \
+	)				
+	echo "$MYSQL_PMADB_NAME"
+	# ----------------------------------------------------------------
+if [ "$IAMEXPERT" = "1" ]; then
 		# ----------------------------------------------------------------
-		if prompt_confirm "Do you want use Cloudflare?" ; then
+HEIGHT=30
+WIDTH=60
+CHOICE_HEIGHT=2
+MENU="Do you want use Cloudflare?:"
+
+OPTIONS=(1 "Yes"
+         2 "No")
+
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)		 
+		 
+clear
+case $CHOICE in
+        1)
 			CLOUDFLARE="1"
-			echo "${finished} You use Cloudflare"
-		else
+            echo "${finished} You use Cloudflare"
+            ;;
+        2)
 			CLOUDFLARE="0"
-			echo "${finished} You dont use Cloudflare"
-		fi
+            echo "${finished} You dont use Cloudflare"
+            ;;
+esac
 		# ----------------------------------------------------------------
-		if [ "$ALLOWHTTPCONNECTIONS" = "0" ]; then
+if [ "$ALLOWHTTPCONNECTIONS" = "0" ]; then
 			# ----------------------------------------------------------------
-			if prompt_confirm "Do you want use HIGH SECURITY?" ; then
-				HIGH_SECURITY="1"
-				echo "${finished} You use HIGH SECURITY"
-			else
-				HIGH_SECURITY="0"
-				echo "${finished} You dont use HIGH SECURITY"
-			fi
-		else
-			HIGH_SECURITY="0"
-		fi
-		# ----------------------------------------------------------------
-		if prompt_confirm "Do you want use Debug Mode?" ; then
-			DEBUG_IS_SET="1"
-			echo "${finished} You use Debug Mode"
-		else
-			DEBUG_IS_SET="0"
-			echo "${finished} You dont use Debug Mode"
-		fi
+HEIGHT=30
+WIDTH=60
+CHOICE_HEIGHT=2
+MENU="Do you want use HIGH SECURITY?:"
 
-	fi
+OPTIONS=(1 "Yes"
+         2 "No")
+
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)		 
+		 
+clear
+case $CHOICE in
+        1)
+			HIGH_SECURITY="1"
+            echo "${finished} You use HIGH SECURITY"
+            ;;
+        2)
+			HIGH_SECURITY="0"
+            echo "${finished} You dont use HIGH SECURITY"
+            ;;
+esac			
+fi
+		# ----------------------------------------------------------------
+HEIGHT=30
+WIDTH=60
+CHOICE_HEIGHT=2
+MENU="Do you want use Debug Mode?:"
+
+OPTIONS=(1 "Yes"
+         2 "No")
+
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)		 
+		 
+clear
+case $CHOICE in
+        1)
+			DEBUG_IS_SET="1"
+            echo "${finished} You use Debug Mode"
+            ;;
+        2)
+			DEBUG_IS_SET="0"
+            echo "${finished} You dont use Debug Mode"
+            ;;
+esac		
+fi
 
 	# ----------------------------------------------------------------
 	if [ "$IAMEXPERT" = "0" ]; then
@@ -259,13 +502,33 @@ echo "Start Confighelper for Userconfig"
 		DEBUG_IS_SET="0"
 	fi
 	# ----------------------------------------------------------------
-	if prompt_confirm "Do You need Addonconfig?" ; then
-		ADDONCONFIG_COMPLETED="0"
-		echo "${finished} We start Addonconfig."
-	else
-		ADDONCONFIG_COMPLETED="1"
-		echo "${finished} We dont start Addonconfig."
-	fi
+HEIGHT=30
+WIDTH=60
+CHOICE_HEIGHT=2
+MENU="Do You need Addonconfig?:"
+
+OPTIONS=(1 "Yes"
+         2 "No")
+
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)		 
+		 
+clear
+case $CHOICE in
+        1)
+			ADDONCONFIG_COMPLETED="0"
+            echo "${finished} We start Addonconfig."
+            ;;
+        2)
+			ADDONCONFIG_COMPLETED="1"
+            echo "${finished} We dont start Addonconfig."
+            ;;
+esac
 
 CONFIG_COMPLETED="1"
 # Write Vars to Config file:

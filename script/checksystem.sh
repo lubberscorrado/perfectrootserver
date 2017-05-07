@@ -24,6 +24,8 @@
 #################################
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
+source ~/script/functions.sh
+source ~/configs/userconfig.cfg
 
 checksystem() {
 	####cd /asddf/userconfig.cfg || error_exit "Cannot change directory! Aborting" #####
@@ -90,17 +92,17 @@ checksystem() {
 	if [ ${HIGH_SECURITY} = '0' ]; then
 		RSA_KEY_SIZE="2048"
 	fi
-	
+
 	#only if you need it!
 	if [ ${HIGH_SECURITY} = '1' ]; then
 		RSA_KEY_SIZE="4096"
 	fi
-	
+
 	if [ ${HIGH_SECURITY} = '3' ] && [ ${DEBUG_IS_SET} = '0' ]; then
 		  echo "${error} To set the RSA value to 256, you have to get into the debug mode! I'm sorry bro" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
         exit 1
 	fi
-	
+
 	if [ ${DEBUG_IS_SET} == '1' ]; then
 		set -x
 	fi
@@ -109,7 +111,14 @@ checksystem() {
 	if [ ${HIGH_SECURITY} = '3' ]; then
 		RSA_KEY_SIZE="256"
 	fi
-
+	
+	echo "Teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeest Anfang"
+	echo "$FQDNIP"
+	sleep 3
+	echo "Teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeest Mitte"
+	#echo "$IPADR"
+	echo "Teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeest Ende"
+	
 	if [ ${CLOUDFLARE} != '1' ]; then
 		if [[ $FQDNIP != $IPADR ]]; then
 			echo "${error} The domain (${MYDOMAIN} - ${FQDNIP}) does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
@@ -117,11 +126,6 @@ checksystem() {
 			exit 1
 		else
 			if [ ${USE_VALID_SSL} == '1' ]; then
-				if [[ $(echo ${SSLMAIL} | egrep "^(([-a-zA-Z0-9\!#\$%\&\'*+/=?^_\`{\|}~])+\.)*[-a-zA-Z0-9\!#\$%\&\'*+/=?^_\`{\|}~]+@\w((-|\w)*\w)*\.(\w((-|\w)*\w)*\.)*\w{2,4}$") != ${SSLMAIL} ]]; then
-					echo "${error} Please chose a valid e-mail adress for your letsencrypt ssl certificate!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-					exit 1
-				fi
-				
 					while true; do
 						if [[ $WWWIP != $IPADR ]]; then
 							echo "${error} www.${MYDOMAIN} does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
@@ -138,6 +142,6 @@ checksystem() {
 	fi
 	echo "${ok} The system meets the minimum requirements." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	mkdir -p ~/sources
-	
+
 }
 source ~/configs/userconfig.cfg

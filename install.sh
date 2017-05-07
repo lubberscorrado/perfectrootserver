@@ -25,106 +25,75 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 source script/functions.sh
-source script/checksystem.sh
-source script/logininformation.sh
-source script/instructions.sh
-# Alpha
-source script/confighelper.sh
 
-source script/bash.sh
-source script/system.sh
-source script/mariadb.sh
-if [ ${USE_PHP7} == '1' ] && [ ${USE_PHP5} == '0' ]; then
-		source script/php7.sh
+prs_preinstall() {
+	echo
+	echo
+	echo "$(date +"[%T]") | $(textb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
+	echo "$(date +"[%T]") |  $(textb P) $(textb e) $(textb r) $(textb f) $(textb e) $(textb c) $(textb t)   $(textb R) $(textb o) $(textb o) $(textb t) $(textb s) $(textb e) $(textb r) $(textb v) $(textb e) $(textb r) "
+	echo "$(date +"[%T]") | $(textb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
+	echo
+	echo "$(date +"[%T]") | ${info} Welcome to the Perfect Rootserver installation!"
+	echo "$(date +"[%T]") | ${info} Please wait while the installer is preparing for the first use..."
+
+apt-get -qq update >>"$main_log" 2>>"$err_log"
+#-------------libcrack2
+if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
+	apt-get -y --force-yes install libcrack2 >>"$main_log" 2>>"$err_log"
 fi
-
-if [ ${USE_PHP7} == '0' ] && [ ${USE_PHP5} == '1' ]; then
-		source script/php5.sh
+#-------------dnsutils
+if [ $(dpkg-query -l | grep dnsutils | wc -l) -ne 1 ]; then
+	apt-get -y --force-yes install dnsutils >>"$main_log" 2>>"$err_log" error_exit "Cannot install dnsutils! Aborting"
 fi
-
-source script/ssl.sh
-source script/ssh.sh
-source script/publickey.sh
-source script/nginx.sh
-source script/fail2ban.sh
-source script/phpmyadmin.sh
-
-source script/dovecot.sh
-source script/postfix.sh
-source script/mailfilter.sh
-source script/roundcube.sh
-source script/vimbadmin.sh
-
-source script/firewall.sh
-
-#source script/finischer.sh
-
-# Addons
- source addons/ajenti.sh
- source addons/teamspeak3.sh
- source addons/minecraft.sh
- source addons/vsftpdinstall.sh
- source addons/prestashopinstall.sh
- source addons/piwik.sh
-
-
-# source addons/openvpn.sh
-# source addons/disablelogin.sh
-# source addons/addnewsite.sh
-# source addons/addnewmysqluser.sh
-
-# Start Installation
-#----------------------------------------------------
-#Alpha!
-confighelper
-checksystem
-system
-mariadb
-bashinstall
-ssl
-ssh
-nginx
-
-if [ ${USE_PHP7} == '1' ] && [ ${USE_PHP5} == '0' ]; then
-		php7
+#-------------openssl------TESTING
+if [ $(dpkg-query -l | grep openssl | wc -l) -ne 1 ]; then
+	apt-get install -f -y -t testing openssl >>"$main_log" 2>>"$err_log"
 fi
-
-if [ ${USE_PHP7} == '0' ] && [ ${USE_PHP5} == '1' ]; then
-		php5
+#-------------dialog
+if [ $(dpkg-query -l | grep dialog | wc -l) -ne 1 ]; then
+		apt-get -qq install dialog >/dev/null 2>&1
 fi
+}
 
-dovecot
-postfix
-mailfilter
-roundcube
-vimbadmin
+# Start Action
+prs_preinstall
 
-# Special harding
-#policydweight
+HEIGHT=30
+WIDTH=60
+CHOICE_HEIGHT=6
+BACKTITLE="Perfect Root Server"
+TITLE="Perfect Root Server"
+MENU="Choose one of the following options:"
 
-firewall
-fail2ban
-phpmyadmin
-publickey
+OPTIONS=(1 "Install Perfect Root Server"
+         2 "Update Perfect Root Server"
+         3 "Install Add-on"
+		 4 "Exit")
 
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)
 
-# Addon functions
-addonlogininformation
-ajenti
-teamspeak3
-minecraft
-#vsftpd
-
-# untestet
-#prestashopinstall
-#piwikinstall
-
-#openvpn
-#disablelogin
-#addnewsite
-#finischer
-
-
-# Only at End!
-logininformation
-instructions
+clear
+case $CHOICE in
+        1)
+			echo "You selected: Install Perfect Root Server"
+            bash prsinstall.sh
+            ;;
+        2)
+			echo "You selected: Update Perfect Root Server"
+            bash addons/systemupdate.sh
+            ;;
+        3)
+            echo "You selected: Install Add-on"
+			bash addonsinstall.sh
+            ;;
+		4)
+			echo "Exit"
+			exit 1
+            ;;
+esac

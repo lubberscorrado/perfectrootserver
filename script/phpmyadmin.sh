@@ -33,7 +33,7 @@ htpasswd -b /etc/nginx/htpasswd/.htpasswd ${PMA_HTTPAUTH_USER} ${PMA_HTTPAUTH_PA
 cd /usr/local
 git clone -b STABLE https://github.com/phpmyadmin/phpmyadmin.git -q
 cd /usr/local/phpmyadmin
-composer update --no-dev
+composer update --no-dev >>"$main_log" 2>>"$err_log"
 cd /usr/local
 mkdir phpmyadmin/save
 mkdir phpmyadmin/upload
