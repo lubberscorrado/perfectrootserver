@@ -30,6 +30,9 @@ source ~/configs/userconfig.cfg
 checksystem() {
 	####cd /asddf/userconfig.cfg || error_exit "Cannot change directory! Aborting" #####
 	echo "$(date +"[%T]") | ${info} Checking your system..."
+	
+	#Get out nfs
+	apt-get --purge remove nfs-kernel-server nfs-common portmap rpcbind >>"$main_log" 2>>"$err_log"
 
 	if [ $(dpkg-query -l | grep gawk | wc -l) -ne 1 ]; then
 		apt-get -y --force-yes install gawk >>"$main_log" 2>>"$err_log"
