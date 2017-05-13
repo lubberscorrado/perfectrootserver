@@ -24,15 +24,34 @@
 #################################
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
-source ~/script/functions.sh
-source ~/configs/userconfig.cfg
 
 checksystem() {
-	####cd /asddf/userconfig.cfg || error_exit "Cannot change directory! Aborting" #####
+
+	echo
+	echo
+	echo "$(date +"[%T]") | $(textb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
+	echo "$(date +"[%T]") |  $(textb P) $(textb e) $(textb r) $(textb f) $(textb e) $(textb c) $(textb t)   $(textb R) $(textb o) $(textb o) $(textb t) $(textb s) $(textb e) $(textb r) $(textb v) $(textb e) $(textb r) "
+	echo "$(date +"[%T]") | $(textb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
+	echo
+	echo "$(date +"[%T]") | ${info} Welcome to the Perfect Rootserver installation!"
+	echo "$(date +"[%T]") | ${info} Please wait while the installer is preparing for the first use..."
 	echo "$(date +"[%T]") | ${info} Checking your system..."
 	
+	#-------------libcrack2
+	if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
+		apt-get -y --force-yes install libcrack2 >>"$main_log" 2>>"$err_log"
+	fi	
+	#-------------dnsutils
+	if [ $(dpkg-query -l | grep dnsutils | wc -l) -ne 1 ]; then
+		apt-get -y --force-yes install dnsutils >>"$main_log" 2>>"$err_log" error_exit "Cannot install dnsutils! Aborting"
+	fi
+	#-------------openssl------TESTING
+	if [ $(dpkg-query -l | grep openssl | wc -l) -ne 1 ]; then
+		apt-get install -f -y -t testing openssl >>"$main_log" 2>>"$err_log"
+	fi
+	
 	#Get out nfs
-	apt-get --purge remove nfs-kernel-server nfs-common portmap rpcbind >>"$main_log" 2>>"$err_log"
+	apt-get -y --purge remove nfs-kernel-server nfs-common portmap rpcbind >>"$main_log" 2>>"$err_log"
 
 	if [ $(dpkg-query -l | grep gawk | wc -l) -ne 1 ]; then
 		apt-get -y --force-yes install gawk >>"$main_log" 2>>"$err_log"
@@ -92,45 +111,38 @@ checksystem() {
 	#Check CPU System and set RSA Size
 	unset $RSA_KEY_SIZE
 	#default
-	if [ ${HIGH_SECURITY} = '0' ]; then
+	if [[ ${HIGH_SECURITY} = '0' ]]; then
 		RSA_KEY_SIZE="2048"
 	fi
 
 	#only if you need it!
-	if [ ${HIGH_SECURITY} = '1' ]; then
+	if [[ ${HIGH_SECURITY} = '1' ]]; then
 		RSA_KEY_SIZE="4096"
 	fi
 
-	if [ ${HIGH_SECURITY} = '3' ] && [ ${DEBUG_IS_SET} = '0' ]; then
+	if [[ ${HIGH_SECURITY} = '3' ]] && [[ ${DEBUG_IS_SET} = '0' ]]; then
 		  echo "${error} To set the RSA value to 256, you have to get into the debug mode! I'm sorry bro" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
         exit 1
 	fi
 
-	if [ ${DEBUG_IS_SET} == '1' ]; then
+	if [[ ${DEBUG_IS_SET} == '1' ]]; then
 		set -x
 	fi
 
 	#only debug!
-	if [ ${HIGH_SECURITY} = '3' ]; then
+	if [[ ${HIGH_SECURITY} = '3' ]]; then
 		RSA_KEY_SIZE="256"
 	fi
 	
-	echo "Teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeest Anfang"
-	echo "$FQDNIP"
-	sleep 3
-	echo "Teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeest Mitte"
-	#echo "$IPADR"
-	echo "Teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeest Ende"
-	
-	if [ ${CLOUDFLARE} != '1' ]; then
-		if [[ $FQDNIP != $IPADR ]]; then
+	if [[ ${CLOUDFLARE} != '1' ]]; then
+		if [[ ${FQDNIP} != ${IPADR} ]]; then
 			echo "${error} The domain (${MYDOMAIN} - ${FQDNIP}) does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 			echo "${error} Please check the userconfig and/or your DNS-Records." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 			exit 1
 		else
-			if [ ${USE_VALID_SSL} == '1' ]; then
+			if [[ ${USE_VALID_SSL} == '1' ]]; then
 					while true; do
-						if [[ $WWWIP != $IPADR ]]; then
+						if [[ ${WWWIP} != ${IPADR} ]]; then
 							echo "${error} www.${MYDOMAIN} does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 							echo
 							echo "${warn} Please check your DNS-Records." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
@@ -147,4 +159,5 @@ checksystem() {
 	mkdir -p ~/sources
 
 }
+source ~/script/functions.sh
 source ~/configs/userconfig.cfg

@@ -24,7 +24,9 @@
 #################################
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
+source ~/configs/userconfig.cfg
 
+functionsprs() {
 # Some nice colors
 red() { echo "$(tput setaf 1)$*$(tput setaf 9)"; }
 green() { echo "$(tput setaf 2)$*$(tput setaf 9)"; }
@@ -66,6 +68,7 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 
 # Date!
 CURRENT_DATE=`date +%Y-%m-%d:%H:%M:%S`
+}
 
 # My promp function :)
 prompt_confirm() {

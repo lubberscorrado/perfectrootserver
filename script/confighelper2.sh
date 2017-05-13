@@ -32,65 +32,38 @@
 source ~/script/security.sh
 source ~/script/functions.sh
 CONFIGHELPER_PATH="/root"
-##############CONFIGHELPER INSTALLERS
-confighelper_installs() {
-	echo
-	echo
-	echo "$(date +"[%T]") | $(textb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
-	echo "$(date +"[%T]") |  $(textb P) $(textb e) $(textb r) $(textb f) $(textb e) $(textb c) $(textb t)   $(textb R) $(textb o) $(textb o) $(textb t) $(textb s) $(textb e) $(textb r) $(textb v) $(textb e) $(textb r) "
-	echo "$(date +"[%T]") | $(textb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
-	echo
-	echo "$(date +"[%T]") | ${info} Welcome to the Perfect Rootserver installation!"
-	echo "$(date +"[%T]") | ${info} Please wait while the installer is preparing for the first use..."
 
-apt-get -qq update >>"$main_log" 2>>"$err_log"
-#-------------libcrack2
-if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
-	apt-get -y --force-yes install libcrack2 >>"$main_log" 2>>"$err_log"
-fi
-#-------------dnsutils
-if [ $(dpkg-query -l | grep dnsutils | wc -l) -ne 1 ]; then
-	apt-get -y --force-yes install dnsutils >>"$main_log" 2>>"$err_log" error_exit "Cannot install dnsutils! Aborting"
-fi
-#-------------openssl------TESTING
-if [ $(dpkg-query -l | grep openssl | wc -l) -ne 1 ]; then
-	apt-get install -f -y -t testing openssl >>"$main_log" 2>>"$err_log"
-fi
-}
 ##############CONFIGHELPER USERCONFIG
-confighelper_userconfig() {
-#echo "${info} Start confighelper...." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-
-BACKTITLE="Perfect Root Server Installation"
-TITLE="Perfect Root Server Installation"			
-				
-echo "Start Confighelper for Userconfig"
-
-HEIGHT=30
-WIDTH=60
-CHOICE_HEIGHT=2
-MENU="Are you an expert?:"
-
-OPTIONS=(1 "Yes"
-         2 "No")
-
+menu() {
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
                 --title "$TITLE" \
                 --menu "$MENU" \
                 $HEIGHT $WIDTH $CHOICE_HEIGHT \
                 "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)		 
-		 
+                2>&1 >/dev/tty)	
+}
+
+confighelper_userconfig() {
+# Global menu variables
+BACKTITLE="Perfect Root Server Installation"
+TITLE="Perfect Root Server Installation"	
+HEIGHT=30
+WIDTH=60	
+			
+### Start ###
+CHOICE_HEIGHT=2
+MENU="Are you an expert?:"
+OPTIONS=(1 "Yes"
+         2 "No")
+menu		 
 clear
 case $CHOICE in
         1)
 			IAMEXPERT="1"
-            echo "${finished} You are an Expert!"
             ;;
         2)
 			IAMEXPERT="0"
-            echo "${finished} You are normal user"
             ;;
 esac
            	
@@ -137,88 +110,55 @@ esac
 		echo "${finished} Your SSH Port is: $SSH_PORT"
 	fi
 	# ----------------------------------------------------------------
-HEIGHT=30
-WIDTH=60
 CHOICE_HEIGHT=6
 MENU="Choose a timezone:"
-
 OPTIONS=(1 "Europe/Berlin"
 		 2 "Europe/Moscow"
 		 3 "Australia/Sydney"
 		 4 "Asia/Tokyo"
 		 5 "America/Los_Angeles"
 		 6 "America/New_York")
-
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)		 
-		 
+menu	 		 
 clear
 case $CHOICE in
         1)
 			TIMEZONE="Europe/Berlin"
-            echo "${finished} Your Timezone is Europe/Berlin"
             ;;
 		2)
 			TIMEZONE="Europe/Moscow"
-			echo "${finished} Your Timezone is Europe/Moscow"
             ;;		
 		3)
 			TIMEZONE="Australia/Sydney"
-			echo "${finished} Your Timezone is Australia/Sydney"
             ;;		
 		4)
 			TIMEZONE="Asia/Tokyo"
-			echo "${finished} Your Timezone is Asia/Tokyo"
             ;;		
 		5)
 			TIMEZONE="America/Los_Angeles"
-			echo "${finished} Your Timezone is America/Los_Angeles"
             ;;	
         6)
 			TIMEZONE="America/New_York"
-			echo "${finished} Your Timezone is America/New_York"
             ;;
 esac
-
 	# ----------------------------------------------------------------
 
 	# Todo
 	# Check valid Domain
 	# Maybe function from functions.sh ;)
-	
-	HEIGHT=30
-	WIDTH=60
 
 	MYDOMAIN=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
                 --inputbox "Enter your Domain without http:// (exmaple.org):" \
                 $HEIGHT $WIDTH \
                 3>&1 1>&2 2>&3 3>&- \
-	)				
-	echo "$MYDOMAIN"	
+	)					
 	
 	# ----------------------------------------------------------------
-HEIGHT=30
-WIDTH=60
 CHOICE_HEIGHT=2
 MENU="Do you want to Use SSL?:"
-
 OPTIONS=(1 "Yes"
          2 "No")
-
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)		 
-		 
+menu
 clear
 case $CHOICE in
         1)
@@ -240,256 +180,157 @@ case $CHOICE in
             echo "${finished} You dont use SSL"
             ;;
 esac
-
 	# ----------------------------------------------------------------
-HEIGHT=30
-WIDTH=60
 CHOICE_HEIGHT=3
 MENU="Do you want to Use Mailserver?:"
 
 OPTIONS=(1 "Yes"
 		 2 "Yes with Webmail"
          3 "No")
-
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)		 
-		 
+menu	 
 clear
 case $CHOICE in
         1)
 			USE_MAILSERVER="1"
-			echo "${finished} You use Mailserver"
             ;;
         2)
 			USE_MAILSERVER="1"
 			USE_WEBMAIL="1"
-            echo "${finished} You use Mailserver and Webmail"
             ;;
 		3)
 			USE_MAILSERVER="0"
 			USE_WEBMAIL="0"
-            echo "${finished} You dont use Mailserver"
             ;;
 esac
 	# ----------------------------------------------------------------
-HEIGHT=30
-WIDTH=60
 CHOICE_HEIGHT=2
 MENU="Do you want to Use PHP5 oder PHP7?:"
 
 OPTIONS=(1 "PHP 5"
          2 "PHP 7")
-
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)		 
-		 
+menu		 
 clear
 case $CHOICE in
         1)
 			USE_PHP5="1"
 			USE_PHP7="0"
-            echo "${finished} You use PHP-Version 5"
             ;;
         2)
 			USE_PHP7="1"
 			USE_PHP5="0"
-            echo "${finished} You use PHP-Version 7"
             ;;
 esac
 	# ----------------------------------------------------------------
-HEIGHT=30
-WIDTH=60
 CHOICE_HEIGHT=3
 MENU="Do you want to Use PHPMyAdmin?:"
 
 OPTIONS=(1 "Yes"
 		 2 "Yes, but restrcited"
          3 "No")
-
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)		 
-		 
+menu	 
 clear
 case $CHOICE in
         1)
 			USE_PMA="1"
-            echo "${finished} You use PHPMyAdmin"
             ;;
         2)
 			USE_PMA="1"
 			PMA_RESTRICT="1"
-			echo "${finished} You use PHPMyAdmin with a restricted Login"
             ;;
 		3)
 			USE_PMA="0"
 			PMA_RESTRICT="0"
-			echo "${finished} You dont use PHPMyAdmin"
             ;;	
 esac
 
 	# ----------------------------------------------------------------
-HEIGHT=30
-WIDTH=60
 CHOICE_HEIGHT=2
 MENU="Do you want allow http-connections?:"
 
 OPTIONS=(1 "Yes"
          2 "No")
-
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)		 
-		 
+menu	 
 clear
 case $CHOICE in
         1)
 			ALLOWHTTPCONNECTIONS="1"
-            echo "${finished} You allow http-connections"
             ;;
         2)
 			ALLOWHTTPCONNECTIONS="0"
-			echo "${finished} You dont allow http-connections"
             ;;
 esac
 	# ----------------------------------------------------------------
-	HEIGHT=30
-	WIDTH=60
-
 	PMA_HTTPAUTH_USER=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
                 --inputbox "Please choose an user for HTTP-Auth login:" \
                 $HEIGHT $WIDTH \
                 3>&1 1>&2 2>&3 3>&- \
 	)				
-	echo "$PMA_HTTPAUTH_USER"
 	# ----------------------------------------------------------------
-	HEIGHT=30
-	WIDTH=60
-
 	MYSQL_PMADB_USER=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
                 --inputbox "Please choose an user for MYSQL PHPMyAdmin Login:" \
                 $HEIGHT $WIDTH \
                 3>&1 1>&2 2>&3 3>&- \
 	)				
-	echo "$MYSQL_PMADB_USER"
 	# ----------------------------------------------------------------
-	HEIGHT=30
-	WIDTH=60
-
 	MYSQL_PMADB_NAME=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
                 --inputbox "Please choose an DB-Name for MYSQL PHPMyAdmin:" \
                 $HEIGHT $WIDTH \
                 3>&1 1>&2 2>&3 3>&- \
 	)				
-	echo "$MYSQL_PMADB_NAME"
 	# ----------------------------------------------------------------
 if [ "$IAMEXPERT" = "1" ]; then
 		# ----------------------------------------------------------------
-HEIGHT=30
-WIDTH=60
 CHOICE_HEIGHT=2
 MENU="Do you want use Cloudflare?:"
 
 OPTIONS=(1 "Yes"
          2 "No")
-
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)		 
-		 
+menu	 
 clear
 case $CHOICE in
         1)
 			CLOUDFLARE="1"
-            echo "${finished} You use Cloudflare"
             ;;
         2)
 			CLOUDFLARE="0"
-            echo "${finished} You dont use Cloudflare"
             ;;
 esac
 		# ----------------------------------------------------------------
 if [ "$ALLOWHTTPCONNECTIONS" = "0" ]; then
 			# ----------------------------------------------------------------
-HEIGHT=30
-WIDTH=60
 CHOICE_HEIGHT=2
 MENU="Do you want use HIGH SECURITY?:"
 
 OPTIONS=(1 "Yes"
          2 "No")
-
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)		 
-		 
+menu	 
 clear
 case $CHOICE in
         1)
 			HIGH_SECURITY="1"
-            echo "${finished} You use HIGH SECURITY"
             ;;
         2)
 			HIGH_SECURITY="0"
-            echo "${finished} You dont use HIGH SECURITY"
             ;;
 esac			
 fi
 		# ----------------------------------------------------------------
-HEIGHT=30
-WIDTH=60
 CHOICE_HEIGHT=2
 MENU="Do you want use Debug Mode?:"
 
 OPTIONS=(1 "Yes"
          2 "No")
-
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)		 
-		 
+menu	 
 clear
 case $CHOICE in
         1)
 			DEBUG_IS_SET="1"
-            echo "${finished} You use Debug Mode"
             ;;
         2)
 			DEBUG_IS_SET="0"
-            echo "${finished} You dont use Debug Mode"
             ;;
 esac		
 fi
@@ -502,31 +343,19 @@ fi
 		DEBUG_IS_SET="0"
 	fi
 	# ----------------------------------------------------------------
-HEIGHT=30
-WIDTH=60
 CHOICE_HEIGHT=2
 MENU="Do You need Addonconfig?:"
 
 OPTIONS=(1 "Yes"
          2 "No")
-
-CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --title "$TITLE" \
-                --menu "$MENU" \
-                $HEIGHT $WIDTH $CHOICE_HEIGHT \
-                "${OPTIONS[@]}" \
-                2>&1 >/dev/tty)		 
-		 
+menu		 
 clear
 case $CHOICE in
         1)
 			ADDONCONFIG_COMPLETED="0"
-            echo "${finished} We start Addonconfig."
             ;;
         2)
 			ADDONCONFIG_COMPLETED="1"
-            echo "${finished} We dont start Addonconfig."
             ;;
 esac
 

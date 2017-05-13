@@ -24,39 +24,14 @@
 #################################
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
-source script/functions.sh
 
-prs_preinstall() {
-	echo
-	echo
-	echo "$(date +"[%T]") | $(textb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
-	echo "$(date +"[%T]") |  $(textb P) $(textb e) $(textb r) $(textb f) $(textb e) $(textb c) $(textb t)   $(textb R) $(textb o) $(textb o) $(textb t) $(textb s) $(textb e) $(textb r) $(textb v) $(textb e) $(textb r) "
-	echo "$(date +"[%T]") | $(textb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
-	echo
-	echo "$(date +"[%T]") | ${info} Welcome to the Perfect Rootserver installation!"
-	echo "$(date +"[%T]") | ${info} Please wait while the installer is preparing for the first use..."
+echo "Preparing menu..."
+apt-get -qq update
 
-apt-get -qq update >>"$main_log" 2>>"$err_log"
-#-------------libcrack2
-if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
-	apt-get -y --force-yes install libcrack2 >>"$main_log" 2>>"$err_log"
-fi
-#-------------dnsutils
-if [ $(dpkg-query -l | grep dnsutils | wc -l) -ne 1 ]; then
-	apt-get -y --force-yes install dnsutils >>"$main_log" 2>>"$err_log" error_exit "Cannot install dnsutils! Aborting"
-fi
-#-------------openssl------TESTING
-if [ $(dpkg-query -l | grep openssl | wc -l) -ne 1 ]; then
-	apt-get install -f -y -t testing openssl >>"$main_log" 2>>"$err_log"
-fi
 #-------------dialog
-if [ $(dpkg-query -l | grep dialog | wc -l) -ne 1 ]; then
+	if [ $(dpkg-query -l | grep dialog | wc -l) -ne 1 ]; then
 		apt-get -qq install dialog >/dev/null 2>&1
-fi
-}
-
-# Start Action
-prs_preinstall
+	fi
 
 HEIGHT=30
 WIDTH=60

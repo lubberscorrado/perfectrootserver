@@ -25,11 +25,11 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 source script/functions.sh
+source script/confighelper2.sh
+
 source script/checksystem.sh
 source script/logininformation.sh
 source script/instructions.sh
-# Alpha
-source script/confighelper2.sh
 
 source script/bash.sh
 source script/system.sh
@@ -77,6 +77,7 @@ source script/firewall.sh
 #----------------------------------------------------
 #Alpha!
 confighelper
+functionsprs
 checksystem
 system
 mariadb
