@@ -62,13 +62,13 @@ main_log="/root/logs/main.log"
 err_log="/root/logs/error.log"
 make_log="/root/logs/make.log"
 make_err_log="/root/logs/make_error.log"
+}
 
 # Check valid E-Mail
 CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?\$"
 
 # Date!
 CURRENT_DATE=`date +%Y-%m-%d:%H:%M:%S`
-}
 
 # My promp function :)
 prompt_confirm() {

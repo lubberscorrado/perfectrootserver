@@ -25,7 +25,9 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 source script/functions.sh
-source script/confighelper2.sh
+source script/confighelper.sh
+source script/addonconfighelper.sh
+
 
 source script/checksystem.sh
 source script/logininformation.sh
@@ -76,7 +78,14 @@ source script/firewall.sh
 # Start Installation
 #----------------------------------------------------
 #Alpha!
-confighelper
+confighelper_generate_passwords
+confighelper_userconfig
+if [[ ${ADDONCONFIG_COMPLETED} == "0" ]]; then
+	confighelper_addonconfig
+fi
+confighelper_show_config
+
+
 functionsprs
 checksystem
 system
