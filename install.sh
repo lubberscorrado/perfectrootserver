@@ -25,6 +25,7 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 clear
+echo "Perfect Root Server"
 echo "Preparing menu..."
 apt-get -qq update
 
@@ -60,11 +61,9 @@ MENU="Choose one of the following options:"
 		clear
 		case $CHOICE in
 				1)
-					echo "You selected: Install Perfect Root Server"
 					bash prsinstall.sh
 					;;
 				2)
-					echo "You selected: Install Add-on"
 					bash addonsinstall.sh
 					;;
 				3)
@@ -94,15 +93,12 @@ MENU="Choose one of the following options:"
 		clear
 		case $CHOICE in
 				1)
-					echo "You selected: Install Perfect Root Server"
 					bash prsinstall.sh
 					;;
 				2)
-					echo "You selected: Update Perfect Root Server"
 					bash addons/systemupdate.sh
 					;;
 				3)
-					echo "You selected: Install Add-on"
 					bash addonsinstall.sh
 					;;
 				4)
@@ -111,4 +107,6 @@ MENU="Choose one of the following options:"
 					;;
 		esac
 	fi
+	
+	
 

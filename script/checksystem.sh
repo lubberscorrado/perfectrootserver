@@ -125,9 +125,6 @@ checksystem() {
         exit 1
 	fi
 
-	if [[ ${DEBUG_IS_SET} == '1' ]]; then
-		set -x
-	fi
 
 	#only debug!
 	if [[ ${HIGH_SECURITY} = '3' ]]; then
@@ -155,6 +152,11 @@ checksystem() {
 			fi
 		fi
 	fi
+	
+	if [[ ${DEBUG_IS_SET} == '1' ]]; then
+		set -x
+	fi
+	
 	echo "${ok} The system meets the minimum requirements." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	mkdir -p ~/sources
 

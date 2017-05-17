@@ -40,141 +40,248 @@ WIDTH=60
 
 ### Start ###
 
-	# ----------------------------------------------------------------
-	if prompt_confirm "Do you want to Add a new Site?" ; then
-		ADD_NEW_SITE="1"
-		echo "${finished} You want to add a new Site."
-			# --------------------------------
-			read -p "Please Type your Domain without http://www.:" MYOTHERDOMAIN
-			echo "${finished} Your second Domain is: $MYOTHERDOMAIN"
-	else
-		MYOTHERDOMAIN="0"
-		echo "${finished} You dont add a new site"
-	fi
-	# ----------------------------------------------------------------
-	if prompt_confirm "Do you want to disable root Login?" ; then
-		DISABLE_ROOT_LOGIN="1"
-		echo "${finished} You want to disable root login."
-			# --------------------------------
-			read -p "Please Type your new SSH User:" SSHUSER
-			echo "${finished} Your new SSH USer is: $SSHUSER"
-	else
-		DISABLE_ROOT_LOGIN="0"
-		echo "${finished} You dont disable root Login. Your User to login is: root"
-	fi
-	# ----------------------------------------------------------------
+# ----------------------------------------------------------------
+CHOICE_HEIGHT=2
+MENU="Do you want to Add a new Site?"
+OPTIONS=(1 "Yes"
+         2 "No")
+menu
+clear
+case $CHOICE in
+        1)
+			ADD_NEW_SITE="1"
+			
+			
+			MYOTHERDOMAIN=$(dialog --clear \
+					--backtitle "$BACKTITLE" \
+					--inputbox "Please Type your Domain without http://www.:" \
+					$HEIGHT $WIDTH \
+					3>&1 1>&2 2>&3 3>&- \
+					)
+            ;;
+        2)
+			MYOTHERDOMAIN="0"
+            ;;
+esac
+# ----------------------------------------------------------------
+##################################################################
+# ----------------------------------------------------------------
+CHOICE_HEIGHT=2
+MENU="Do you want to disable root Login?"
+OPTIONS=(1 "Yes"
+         2 "No")
+menu
+clear
+case $CHOICE in
+        1)
+			DISABLE_ROOT_LOGIN="1"
+			
+			
+			SSHUSER=$(dialog --clear \
+					--backtitle "$BACKTITLE" \
+					--inputbox "Please Type your new SSH User:" \
+					$HEIGHT $WIDTH \
+					3>&1 1>&2 2>&3 3>&- \
+					)
+            ;;
+        2)
+			DISABLE_ROOT_LOGIN="0"
+            ;;
+esac
+# ----------------------------------------------------------------
+##################################################################
+# ----------------------------------------------------------------
+CHOICE_HEIGHT=2
+MENU="Do you want use TeamSpeak 3?:"
+OPTIONS=(1 "Yes"
+			2 "No")
+menu		 
+clear
+case $CHOICE in
+		1)
+			USE_TEAMSPEAK="1"
+				;;
+		2)
+			USE_TEAMSPEAK="0"
+			;;
+esac
+# ----------------------------------------------------------------
+##################################################################
+# ----------------------------------------------------------------
+CHOICE_HEIGHT=2
+MENU="Do you want use Minecraft?:"
+OPTIONS=(1 "Yes"
+		2 "No")
+menu		 
+clear
+case $CHOICE in
+		1)
+			USE_MINECRAFT="1"
+			;;
+		2)
+			USE_MINECRAFT="0"
+			;;
+esac
+# ----------------------------------------------------------------
+##################################################################
+# ----------------------------------------------------------------
+if [ "$USE_VALID_SSL" = "1" ]; then
 	CHOICE_HEIGHT=2
-	MENU="Do you want use TeamSpeak 3?:"
+	MENU="Do you want use Ajenti?:"
 	OPTIONS=(1 "Yes"
 			2 "No")
 	menu		 
 	clear
 	case $CHOICE in
 			1)
-				USE_TEAMSPEAK="1"
+				USE_AJENTI="1"
 				;;
 			2)
-				USE_TEAMSPEAK="0"
+				USE_AJENTI="0"
 				;;
 	esac
-	# ----------------------------------------------------------------
-	CHOICE_HEIGHT=2
-	MENU="Do you want use Minecraft?:"
-	OPTIONS=(1 "Yes"
-			2 "No")
-	menu		 
-	clear
-	case $CHOICE in
-			1)
-				USE_MINECRAFT="1"
-				;;
-			2)
-				USE_MINECRAFT="0"
-				;;
-	esac
-	# ----------------------------------------------------------------
-	if [ "$USE_VALID_SSL" = "1" ]; then
-		CHOICE_HEIGHT=2
-		MENU="Do you want use Ajenti?:"
-		OPTIONS=(1 "Yes"
-				2 "No")
-		menu		 
-		clear
-		case $CHOICE in
-				1)
-					USE_AJENTI="1"
-					;;
-				2)
-					USE_AJENTI="0"
-					;;
-		esac
-	fi
-	# ----------------------------------------------------------------
-	CHOICE_HEIGHT=2
-	MENU="Do you want use Piwik?:"
-	OPTIONS=(1 "Yes"
-			2 "No")
-	menu		 
-	clear
-	case $CHOICE in
-			1)
-				USE_PIWIK="1"
-				;;
-			2)
-				USE_PIWIK="0"
-				;;
-	esac
-	# ----------------------------------------------------------------
-	if prompt_confirm "Do you want use VSFTPd?" ; then
-		USE_VSFTPD="1"
-		echo "${finished} You install VSFTPd."
-			# --------------------------------
+fi
+# ----------------------------------------------------------------
+##################################################################
+# ----------------------------------------------------------------
+CHOICE_HEIGHT=2
+MENU="Do you want use Piwik?:"
+OPTIONS=(1 "Yes"
+		2 "No")
+menu		 
+clear
+case $CHOICE in
+		1)
+			USE_PIWIK="1"
+			;;
+		2)
+			USE_PIWIK="0"
+			;;
+esac
+# ----------------------------------------------------------------
+##################################################################
+# ----------------------------------------------------------------
+CHOICE_HEIGHT=2
+MENU="Do you want use VSFTPd?"
+OPTIONS=(1 "Yes"
+		2 "No")
+menu		 
+clear
+case $CHOICE in
+		1)
+			USE_VSFTPD="1"
 			while true
 			do
-				read -p "Please type your ftp User. Use only a-z!:" FTP_USERNAME
+				FTP_USERNAME=$(dialog --clear \
+					--backtitle "$BACKTITLE" \
+					--inputbox "Please type your ftp User. Use only a-z!:" \
+					$HEIGHT $WIDTH \
+					3>&1 1>&2 2>&3 3>&- \
+					)
 					if [[ $FTP_USERNAME =~ ^[a-z]+$ ]]; then
-						echo "${finished} Your FTP USername is $FTP_USERNAME."
 						break
 					else
-						echo "[Big Error] Should we perhaps learn something about lowercase letters?"
+						dialog --infobox "[Big Error] Should we perhaps learn something about lowercase letters?" $HEIGHT $WIDTH
+						sleep 2
 					fi
 			done
-	else
-		USE_VSFTPD="0"
-		echo "${finished} You dont use VSFTPd"
-	fi
-	# ----------------------------------------------------------------
-	if prompt_confirm "Do you want use OPENVPN?" ; then
-		USE_OPENVPN="1"
-		echo "${finished} You use OPENVPN"
-			# --------------------------------
+			;;
+		2)
+			USE_VSFTPD="0"
+			;;
+esac
+# ----------------------------------------------------------------
+##################################################################
+# ----------------------------------------------------------------
+CHOICE_HEIGHT=2
+MENU="Do you want use OPENVPN?"
+OPTIONS=(1 "Yes"
+		2 "No")
+menu		 
+clear
+case $CHOICE in
+		1)
+			USE_OPENVPN="1"
 			SERVER_IP=$(ip route get 8.8.8.8 | head -1 | cut -d' ' -f8)
-
 			while true
 			do
-				read -p "Enter your valid E-Mail address: " KEY_EMAIL
+				KEY_EMAIL=$(dialog --clear \
+					--backtitle "$BACKTITLE" \
+					--inputbox "Enter your valid E-Mail address:" \
+					--nocancel \
+					--no-cancel \
+					$HEIGHT $WIDTH \
+					3>&1 1>&2 2>&3 3>&- \
+					)
+					
 				if [[ "$KEY_EMAIL" =~ $CHECK_E_MAIL ]];then
-					echo "${finished} Your E-Mail address is $KEY_EMAIL"
 					break
 				else
-					echo "[ERROR] Should we again practice how an e-mail address looks?"
+					dialog --infobox "[ERROR] Should we again practice how an e-mail address looks?" $HEIGHT $WIDTH
+					sleep 2
 				fi
 			done
+				KEY_COUNTRY=$(dialog --clear \
+						--backtitle "$BACKTITLE" \
+						--inputbox "Please type your COUNTRY. Example: DE for Germany:" \
+						--nocancel \
+						--no-cancel \
+						$HEIGHT $WIDTH \
+						3>&1 1>&2 2>&3 3>&- \
+						)
+						
+				KEY_PROVINCE=$(dialog --clear \
+						--backtitle "$BACKTITLE" \
+						--inputbox "Please type your PROVINCE. Example: Hessen:" \
+						--nocancel \
+						--no-cancel \
+						$HEIGHT $WIDTH \
+						3>&1 1>&2 2>&3 3>&- \
+						)
+						
+				KEY_CITY=$(dialog --clear \
+						--backtitle "$BACKTITLE" \
+						--inputbox "Please type your CITY. Example: Frankfurt:" \
+						--nocancel \
+						--no-cancel \
+						$HEIGHT $WIDTH \
+						3>&1 1>&2 2>&3 3>&- \
+						)
+					
+			;;
+		2)
+			USE_OPENVPN="0"
+			;;
+esac
+# ----------------------------------------------------------------
+##################################################################
+# ----------------------------------------------------------------
+# At the moment, prestashop addon is not working!
+USE_PRESTASHOP="0"
 
-			read -p "Please type your COUNTRY. Example: DE for Germany:" KEY_COUNTRY
-			read -p "Please type your PROVINCE. Example: Hessen:" KEY_PROVINCE
-			read -p "Please type your CITY. Example: Frankfurt:" KEY_CITY
-	else
-		USE_OPENVPN="0"
-		echo "${finished} You dont use OPENVPN"
-	fi
 
+# CHOICE_HEIGHT=2
+# MENU="Do you want use Prestashop E-Commerce System?"
+# OPTIONS=(1 "Yes"
+		# 2 "No")
+# menu		 
+# clear
+# case $CHOICE in
+		# 1)
+			# USE_PRESTASHOP="1"
+			# ;;
+		# 2)
+			# USE_PRESTASHOP="0"
+			# ;;
+# esac
+	
+	
+	
 	# ----------------------------------------------------------------
 	# NOT READY!
 	# DO NOT USE PRESTASHOP with confighelper!
 	# ---------------------------------------------------------------#
 		#read -p "Do you want use Prestashop E-Commerce System? Please type y or n:" USE_PRESTASHOP
-		USE_PRESTASHOP="0"
 	#~ if [ "$USE_PRESTASHOP" = "y" ]; then
 		#~ USE_PRESTASHOP="1"
 		#~ echo "${finished} You use Prestashop E-Commerce System"

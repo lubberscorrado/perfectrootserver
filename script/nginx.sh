@@ -30,8 +30,8 @@ nginx() {
 # Nginx
 cd ~/sources
 echo "${info} Downloading Nginx Pagespeed..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-wget https://codeload.github.com/pagespeed/ngx_pagespeed/zip/v${NPS_VERSION} >>"$main_log" 2>>"$err_log"
-unzip v${NPS_VERSION}-beta.zip >>"$main_log" 2>>"$err_log"
+wget https://codeload.github.com/pagespeed/ngx_pagespeed/zip/v${NPS_VERSION}-beta >>"$main_log" 2>>"$err_log"
+unzip v${NPS_VERSION}-beta >>"$main_log" 2>>"$err_log"
 
 echo "${info} Downloading Nginx Pagespeed psol..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 cd ngx_pagespeed-${NPS_VERSION}-beta/ >>"$main_log" 2>>"$err_log"

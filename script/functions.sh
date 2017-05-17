@@ -25,6 +25,7 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 source ~/configs/userconfig.cfg
+source ~/configs/addonconfig.cfg
 
 functionsprs() {
 # Some nice colors
@@ -71,6 +72,7 @@ CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@
 CURRENT_DATE=`date +%Y-%m-%d:%H:%M:%S`
 
 # My promp function :)
+# No longer needed
 prompt_confirm() {
   while true; do
     read -r -n 1 -p "${1:-Continue?} [y/n]: " REPLY
@@ -84,6 +86,7 @@ prompt_confirm() {
 
 # Quick and dirty
 # Fix me
+# No longer needed
 prompt_confirm_two() {
   while true; do
     read -r -n 1 -p "${1:-Continue?} [5/7]: " REPLY
@@ -95,9 +98,31 @@ prompt_confirm_two() {
   done
 }
 
+# Dialog Menu
+menu() {
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+				--no-cancel \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)
+}
 
+##############ERROR HANDLING
 error_exit()
 {
 	echo "$1" 1>&2
 	exit 1
+}
+##############CONFIGHELPER SHOW CONFIG
+confighelper_show_config() {
+	dialog --title "Userconfig" --textbox $CONFIGHELPER_PATH/configs/userconfig.cfg 50 250
+	clear
+
+	if [[ ${ADDONCONFIG_COMPLETED} = "1" ]]; then
+		dialog --title "Addonconfig" --textbox $CONFIGHELPER_PATH/configs/addonconfig.cfg 50 250
+		clear
+	fi
 }

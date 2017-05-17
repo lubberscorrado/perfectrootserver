@@ -77,6 +77,7 @@ source script/firewall.sh
 
 # Start Installation
 #----------------------------------------------------
+functionsprs
 #Alpha!
 confighelper_generate_passwords
 confighelper_userconfig
@@ -86,7 +87,7 @@ fi
 confighelper_show_config
 
 
-functionsprs
+
 checksystem
 system
 mariadb
