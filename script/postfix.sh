@@ -28,7 +28,8 @@
 postfix() {
 if [ ${USE_MAILSERVER} == '1' ]; then
 echo "${info} Installing Postfix..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-apt-get install -f -y postfix-mysql postfix-pcre postfix >>"$main_log" 2>>"$err_log"
+
+apt-get install -y postfix-mysql postfix-pcre postfix >>"$main_log" 2>>"$err_log"
 
 mkdir -p /etc/postfix/mysql/
 cat > /etc/postfix/mysql/postfix-mysql-virtual_alias_maps.cf <<END

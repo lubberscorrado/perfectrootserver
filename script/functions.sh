@@ -48,6 +48,14 @@ fyi="$(pinkb [INFO] -)"
 ok="$(greenb [OKAY] -)"
 finished="$(greenb [Finished] -)"
 
+main_log="/root/logs/main.log"
+err_log="/root/logs/error.log"
+make_log="/root/logs/make.log"
+make_err_log="/root/logs/make_error.log"
+}
+
+setipaddrvars()
+{
 IPADR=$(ip route get 8.8.8.8 | head -1 | cut -d' ' -f8)
 INTERFACE=$(ip route get 8.8.8.8 | head -1 | cut -d' ' -f5)
 FQDNIP=$(source ~/configs/userconfig.cfg; dig @8.8.8.8 +short ${MYDOMAIN})
@@ -58,45 +66,17 @@ CHECKMX=$(source ~/configs/userconfig.cfg; dig @8.8.8.8 mx ${MYDOMAIN} +short)
 CHECKSPF=$(source ~/configs/userconfig.cfg; dig @8.8.8.8 ${MYDOMAIN} txt | grep -i spf)
 CHECKDKIM=$(source ~/configs/userconfig.cfg; dig @8.8.8.8 mail._domainkey.${MYDOMAIN} txt | grep -i DKIM1)
 CHECKRDNS=$(dig @8.8.8.8 -x ${IPADR} +short)
-
-main_log="/root/logs/main.log"
-err_log="/root/logs/error.log"
-make_log="/root/logs/make.log"
-make_err_log="/root/logs/make_error.log"
 }
 
 # Check valid E-Mail
-CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?\$"
+CHECK_E_MAIL="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z])?\$"
+
+# Check valid Domain
+####not perfectly working!!!!
+CHECK_DOMAIN="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*.([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z])?\$"
 
 # Date!
 CURRENT_DATE=`date +%Y-%m-%d:%H:%M:%S`
-
-# My promp function :)
-# No longer needed
-prompt_confirm() {
-  while true; do
-    read -r -n 1 -p "${1:-Continue?} [y/n]: " REPLY
-    case $REPLY in
-      [yY]) echo ; return 0 ;;
-      [nN]) echo ; return 1 ;;
-      *) printf " \033[31m %s \n\033[0m" "Invalid input"
-    esac
-  done
-}
-
-# Quick and dirty
-# Fix me
-# No longer needed
-prompt_confirm_two() {
-  while true; do
-    read -r -n 1 -p "${1:-Continue?} [5/7]: " REPLY
-    case $REPLY in
-      [5]) echo ; return 0 ;;
-      [7]) echo ; return 1 ;;
-      *) printf " \033[31m %s \n\033[0m" "Invalid input"
-    esac
-  done
-}
 
 # Dialog Menu
 menu() {
@@ -115,14 +95,4 @@ error_exit()
 {
 	echo "$1" 1>&2
 	exit 1
-}
-##############CONFIGHELPER SHOW CONFIG
-confighelper_show_config() {
-	dialog --title "Userconfig" --textbox $CONFIGHELPER_PATH/configs/userconfig.cfg 50 250
-	clear
-
-	if [[ ${ADDONCONFIG_COMPLETED} = "1" ]]; then
-		dialog --title "Addonconfig" --textbox $CONFIGHELPER_PATH/configs/addonconfig.cfg 50 250
-		clear
-	fi
 }

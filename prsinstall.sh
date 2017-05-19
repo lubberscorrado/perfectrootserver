@@ -80,13 +80,20 @@ source script/firewall.sh
 functionsprs
 #Alpha!
 confighelper_generate_passwords
-confighelper_userconfig
+
+	while true
+	do
+		confighelper_userconfig
+	done
+
 if [[ ${ADDONCONFIG_COMPLETED} == "0" ]]; then
-	confighelper_addonconfig
+	while true
+	do
+		confighelper_addonconfig
+	done
 fi
-confighelper_show_config
 
-
+setipaddrvars
 
 checksystem
 system

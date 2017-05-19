@@ -28,19 +28,20 @@
 # Known issues
 # Prestashop not working
 
-source ~/script/security.sh
-source ~/script/functions.sh
+CONFIGHELPER_PATH="/root"
+source $CONFIGHELPER_PATH/script/security.sh
+source $CONFIGHELPER_PATH/script/functions.sh
 
-##############CONFIGHELPER ADDONCONFIG
+# --- CONFIGHELPER ADDONCONFIG ---
 confighelper_addonconfig() {
+
+# --- GLOBAL MENU VARIABLES ---
 BACKTITLE="Perfect Root Server Installation"
-TITLE="Perfect Root Server Installation"	
+TITLE="Perfect Root Server Installation"
 HEIGHT=30
-WIDTH=60	
+WIDTH=60
 
-### Start ###
-
-# ----------------------------------------------------------------
+# --- START ---
 CHOICE_HEIGHT=2
 MENU="Do you want to Add a new Site?"
 OPTIONS=(1 "Yes"
@@ -50,8 +51,8 @@ clear
 case $CHOICE in
         1)
 			ADD_NEW_SITE="1"
-			
-			
+
+
 			MYOTHERDOMAIN=$(dialog --clear \
 					--backtitle "$BACKTITLE" \
 					--inputbox "Please Type your Domain without http://www.:" \
@@ -63,9 +64,8 @@ case $CHOICE in
 			MYOTHERDOMAIN="0"
             ;;
 esac
-# ----------------------------------------------------------------
-##################################################################
-# ----------------------------------------------------------------
+
+# --- DISABLE ROOT LOGIN ---
 CHOICE_HEIGHT=2
 MENU="Do you want to disable root Login?"
 OPTIONS=(1 "Yes"
@@ -75,8 +75,8 @@ clear
 case $CHOICE in
         1)
 			DISABLE_ROOT_LOGIN="1"
-			
-			
+
+
 			SSHUSER=$(dialog --clear \
 					--backtitle "$BACKTITLE" \
 					--inputbox "Please Type your new SSH User:" \
@@ -88,14 +88,13 @@ case $CHOICE in
 			DISABLE_ROOT_LOGIN="0"
             ;;
 esac
-# ----------------------------------------------------------------
-##################################################################
-# ----------------------------------------------------------------
+
+# --- TEAMSPEAK 3 ---
 CHOICE_HEIGHT=2
 MENU="Do you want use TeamSpeak 3?:"
 OPTIONS=(1 "Yes"
 			2 "No")
-menu		 
+menu
 clear
 case $CHOICE in
 		1)
@@ -105,14 +104,13 @@ case $CHOICE in
 			USE_TEAMSPEAK="0"
 			;;
 esac
-# ----------------------------------------------------------------
-##################################################################
-# ----------------------------------------------------------------
+
+# --- MINECRAFT ---
 CHOICE_HEIGHT=2
 MENU="Do you want use Minecraft?:"
 OPTIONS=(1 "Yes"
 		2 "No")
-menu		 
+menu
 clear
 case $CHOICE in
 		1)
@@ -122,33 +120,32 @@ case $CHOICE in
 			USE_MINECRAFT="0"
 			;;
 esac
-# ----------------------------------------------------------------
-##################################################################
-# ----------------------------------------------------------------
+
+# --- AJENI ---
 if [ "$USE_VALID_SSL" = "1" ]; then
 	CHOICE_HEIGHT=2
 	MENU="Do you want use Ajenti?:"
 	OPTIONS=(1 "Yes"
 			2 "No")
-	menu		 
+	menu
 	clear
 	case $CHOICE in
 			1)
 				USE_AJENTI="1"
+				AJENTI_PASS="$AJENTI_PASS"
 				;;
 			2)
 				USE_AJENTI="0"
 				;;
 	esac
 fi
-# ----------------------------------------------------------------
-##################################################################
-# ----------------------------------------------------------------
+
+# --- PIWIK ---
 CHOICE_HEIGHT=2
 MENU="Do you want use Piwik?:"
 OPTIONS=(1 "Yes"
 		2 "No")
-menu		 
+menu
 clear
 case $CHOICE in
 		1)
@@ -158,14 +155,13 @@ case $CHOICE in
 			USE_PIWIK="0"
 			;;
 esac
-# ----------------------------------------------------------------
-##################################################################
-# ----------------------------------------------------------------
+
+# --- VSFTPD ---
 CHOICE_HEIGHT=2
 MENU="Do you want use VSFTPd?"
 OPTIONS=(1 "Yes"
 		2 "No")
-menu		 
+menu
 clear
 case $CHOICE in
 		1)
@@ -173,7 +169,6 @@ case $CHOICE in
 			while true
 			do
 				FTP_USERNAME=$(dialog --clear \
-					--backtitle "$BACKTITLE" \
 					--inputbox "Please type your ftp User. Use only a-z!:" \
 					$HEIGHT $WIDTH \
 					3>&1 1>&2 2>&3 3>&- \
@@ -190,14 +185,13 @@ case $CHOICE in
 			USE_VSFTPD="0"
 			;;
 esac
-# ----------------------------------------------------------------
-##################################################################
-# ----------------------------------------------------------------
+
+# --- OPENVPN ---
 CHOICE_HEIGHT=2
 MENU="Do you want use OPENVPN?"
 OPTIONS=(1 "Yes"
 		2 "No")
-menu		 
+menu
 clear
 case $CHOICE in
 		1)
@@ -208,12 +202,10 @@ case $CHOICE in
 				KEY_EMAIL=$(dialog --clear \
 					--backtitle "$BACKTITLE" \
 					--inputbox "Enter your valid E-Mail address:" \
-					--nocancel \
-					--no-cancel \
 					$HEIGHT $WIDTH \
 					3>&1 1>&2 2>&3 3>&- \
 					)
-					
+
 				if [[ "$KEY_EMAIL" =~ $CHECK_E_MAIL ]];then
 					break
 				else
@@ -224,38 +216,31 @@ case $CHOICE in
 				KEY_COUNTRY=$(dialog --clear \
 						--backtitle "$BACKTITLE" \
 						--inputbox "Please type your COUNTRY. Example: DE for Germany:" \
-						--nocancel \
-						--no-cancel \
 						$HEIGHT $WIDTH \
 						3>&1 1>&2 2>&3 3>&- \
 						)
-						
+
 				KEY_PROVINCE=$(dialog --clear \
 						--backtitle "$BACKTITLE" \
 						--inputbox "Please type your PROVINCE. Example: Hessen:" \
-						--nocancel \
-						--no-cancel \
 						$HEIGHT $WIDTH \
 						3>&1 1>&2 2>&3 3>&- \
 						)
-						
+
 				KEY_CITY=$(dialog --clear \
 						--backtitle "$BACKTITLE" \
 						--inputbox "Please type your CITY. Example: Frankfurt:" \
-						--nocancel \
-						--no-cancel \
 						$HEIGHT $WIDTH \
 						3>&1 1>&2 2>&3 3>&- \
 						)
-					
+
 			;;
 		2)
 			USE_OPENVPN="0"
 			;;
 esac
-# ----------------------------------------------------------------
-##################################################################
-# ----------------------------------------------------------------
+
+# --- PRETASHOP ---
 # At the moment, prestashop addon is not working!
 USE_PRESTASHOP="0"
 
@@ -264,7 +249,7 @@ USE_PRESTASHOP="0"
 # MENU="Do you want use Prestashop E-Commerce System?"
 # OPTIONS=(1 "Yes"
 		# 2 "No")
-# menu		 
+# menu
 # clear
 # case $CHOICE in
 		# 1)
@@ -274,9 +259,9 @@ USE_PRESTASHOP="0"
 			# USE_PRESTASHOP="0"
 			# ;;
 # esac
-	
-	
-	
+
+
+
 	# ----------------------------------------------------------------
 	# NOT READY!
 	# DO NOT USE PRESTASHOP with confighelper!
@@ -420,10 +405,7 @@ USE_PRESTASHOP="0"
 		#~ echo "${finished} You dont use Prestashop E-Commerce System"
 	#~ fi
 
-
-# Set Value to complete config
 ADDONCONFIG_COMPLETED="1"
-# Write Vars to Config file:
 
 rm -rf $CONFIGHELPER_PATH/configs/addonconfig.cfg
 cat >> $CONFIGHELPER_PATH/configs/addonconfig.cfg <<END
@@ -492,4 +474,22 @@ PRESTASHOP_DB_ENGINE="${chooseengine}"
 ############### Config File from Confighelper ###############
 #-----------------------------------------------------------#
 END
+
+dialog --title "Addonconfig" --textbox $CONFIGHELPER_PATH/configs/addonconfig.cfg 50 250
+clear
+
+CHOICE_HEIGHT=2
+MENU="Settings correct?"
+OPTIONS=(1 "Yes"
+         2 "No")
+menu
+clear
+case $CHOICE in
+        1)
+			break
+            ;;
+        2)
+			confighelper_addonconfig
+            ;;
+esac
 }

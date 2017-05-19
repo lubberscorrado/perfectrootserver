@@ -30,9 +30,9 @@ echo "Preparing menu..."
 apt-get -qq update
 
 #-------------dialog
-	if [ $(dpkg-query -l | grep dialog | wc -l) -ne 1 ]; then
-		apt-get -qq install dialog >/dev/null 2>&1
-	fi
+if [ ! $(dpkg-query -l | grep dialog | wc -l) -ne 2 ]; then
+	apt-get -qq install dialog >/dev/null 2>&1
+fi
 
 HEIGHT=30
 WIDTH=60
@@ -71,7 +71,7 @@ MENU="Choose one of the following options:"
 					exit 1
 					;;
 		esac
-		
+
 	else
 	#Perfectrootserver is installed!
 			OPTIONS=(1 "Install Perfect Root Server"
@@ -107,6 +107,3 @@ MENU="Choose one of the following options:"
 					;;
 		esac
 	fi
-	
-	
-

@@ -36,11 +36,11 @@ checksystem() {
 	echo "$(date +"[%T]") | ${info} Welcome to the Perfect Rootserver installation!"
 	echo "$(date +"[%T]") | ${info} Please wait while the installer is preparing for the first use..."
 	echo "$(date +"[%T]") | ${info} Checking your system..."
-	
+
 	#-------------libcrack2
 	if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
 		apt-get -y --force-yes install libcrack2 >>"$main_log" 2>>"$err_log"
-	fi	
+	fi
 	#-------------dnsutils
 	if [ $(dpkg-query -l | grep dnsutils | wc -l) -ne 1 ]; then
 		apt-get -y --force-yes install dnsutils >>"$main_log" 2>>"$err_log" error_exit "Cannot install dnsutils! Aborting"
@@ -49,7 +49,7 @@ checksystem() {
 	if [ $(dpkg-query -l | grep openssl | wc -l) -ne 1 ]; then
 		apt-get install -f -y -t testing openssl >>"$main_log" 2>>"$err_log"
 	fi
-	
+
 	#Get out nfs
 	apt-get -y --purge remove nfs-kernel-server nfs-common portmap rpcbind >>"$main_log" 2>>"$err_log"
 
@@ -130,12 +130,14 @@ checksystem() {
 	if [[ ${HIGH_SECURITY} = '3' ]]; then
 		RSA_KEY_SIZE="256"
 	fi
-	
+
 	if [[ ${CLOUDFLARE} != '1' ]]; then
+
 		if [[ ${FQDNIP} != ${IPADR} ]]; then
 			echo "${error} The domain (${MYDOMAIN} - ${FQDNIP}) does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 			echo "${error} Please check the userconfig and/or your DNS-Records." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 			exit 1
+
 		else
 			if [[ ${USE_VALID_SSL} == '1' ]]; then
 					while true; do
@@ -152,11 +154,11 @@ checksystem() {
 			fi
 		fi
 	fi
-	
+
 	if [[ ${DEBUG_IS_SET} == '1' ]]; then
 		set -x
 	fi
-	
+
 	echo "${ok} The system meets the minimum requirements." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	mkdir -p ~/sources
 

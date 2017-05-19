@@ -25,28 +25,20 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 
-# Known issues
-# Prestashop not working
-# Addonconfig is show
-## > show_config is now in functions.sh
-### > show_config is run on install.sh after comfighelper!
-
 CONFIGHELPER_PATH="/root"
 source $CONFIGHELPER_PATH/script/security.sh
 source $CONFIGHELPER_PATH/script/functions.sh
 
-
-##############CONFIGHELPER USERCONFIG
-
-
+# --- CONFIGHELPER USERCONFIG ---
 confighelper_userconfig() {
-# Global menu variables
+
+# --- GLOBAL MENU VARIABLES ---
 BACKTITLE="Perfect Root Server Installation"
 TITLE="Perfect Root Server Installation"
 HEIGHT=30
 WIDTH=60
 
-### Start ###
+# --- START ---
 CHOICE_HEIGHT=2
 MENU="Are you an expert?:"
 OPTIONS=(1 "Yes"
@@ -54,7 +46,7 @@ OPTIONS=(1 "Yes"
 menu
 clear
 case $CHOICE in
-        1)
+		1)
 			IAMEXPERT="1"
             ;;
         2)
@@ -62,7 +54,7 @@ case $CHOICE in
             ;;
 esac
 
-	# ----------------------------------------------------------------
+# --- SSH PORT ---
 if [ "$IAMEXPERT" = "1" ]; then
 CHOICE_HEIGHT=2
 MENU="Do you want choose and SSH Port? If you say \"No\" we generate a secure Port!"
@@ -83,13 +75,11 @@ case $CHOICE in
 				if [[ ${CHOOSE_OWN_SSH_PORT} =~ ^-?[0-9]+$ ]]; then
 
 					if [[ -v BLOCKED_PORTS[$CHOOSE_OWN_SSH_PORT] ]]; then
-						dialog --infobox "$CHOOSE_OWN_SSH_PORT is known. Choose an other Port!" $HEIGHT $WIDTH
-						sleep 4
+						dialog --title "Perfectrootserver Confighelper" --msgbox "$CHOOSE_OWN_SSH_PORT is known. Choose an other Port!" $HEIGHT $WIDTH
 						dialog --clear
 					else
 						#You can use this Port
-						dialog --infobox "Your SSH Port is: $CHOOSE_OWN_SSH_PORT" $HEIGHT $WIDTH
-						sleep 4
+						dialog --title "Perfectrootserver Confighelper" --msgbox "Your SSH Port is: $CHOOSE_OWN_SSH_PORT" $HEIGHT $WIDTH
 						dialog --clear
 						SSH_PORT="$CHOOSE_OWN_SSH_PORT"
 						# Todo
@@ -100,7 +90,7 @@ case $CHOICE in
 
 				else
 				dialog --infobox "Maybe you do not know what a number is?" $HEIGHT $WIDTH
-				sleep 4
+
 				dialog --clear
 				fi
 			done
@@ -111,23 +101,22 @@ case $CHOICE in
 			#return a string
 			SSH_PORT=$([[ ! -n "${BLOCKED_PORTS["$randomNumber"]}" ]] && printf "%s\n" "$randomNumber")
 			#sed -i "s/SSH_PORT=\"generateport\"/SSH_PORT=\"$SSH_PORT\"/g" ~/configs/userconfig.cfg
-			dialog --infobox "Your SSH Port is: $SSH_PORT" $HEIGHT $WIDTH
-			sleep 4
+			dialog --title "Perfectrootserver Confighelper" --msgbox "Your SSH Port is: $SSH_PORT" $HEIGHT $WIDTH
+
 			dialog --clear
             ;;
 esac
 fi
-	if [ "$IAMEXPERT" = "0" ]; then
-		#Generate SSH Port
-		randomNumber="$(($RANDOM % 1023))"
-		#return a string
-		SSH_PORT=$([[ ! -n "${BLOCKED_PORTS["$randomNumber"]}" ]] && printf "%s\n" "$randomNumber")
-		#sed -i "s/SSH_PORT=\"generateport\"/SSH_PORT=\"$SSH_PORT\"/g" ~/configs/userconfig.cfg
-		dialog --infobox "Your SSH Port is: $SSH_PORT" $HEIGHT $WIDTH
-		sleep 2
-		dialog --clear
-	fi
-	# ----------------------------------------------------------------
+
+if [ "$IAMEXPERT" = "0" ]; then
+	randomNumber="$(($RANDOM % 1023))"
+	SSH_PORT=$([[ ! -n "${BLOCKED_PORTS["$randomNumber"]}" ]] && printf "%s\n" "$randomNumber")
+	dialog --infobox "Your SSH Port is: $SSH_PORT" $HEIGHT $WIDTH
+	sleep 2
+	dialog --clear
+fi
+
+# --- TIMEZONE ---	
 CHOICE_HEIGHT=6
 MENU="Choose a timezone:"
 OPTIONS=(1 "Europe/Berlin"
@@ -158,20 +147,25 @@ case $CHOICE in
 			TIMEZONE="America/New_York"
             ;;
 esac
-	# ----------------------------------------------------------------
 
-	# Todo
-	# Check valid Domain
-	# Maybe function from functions.sh ;)
+# --- MYDOMAIN ---
+while true
+		do
+			MYDOMAIN=$(dialog --clear \
+			--backtitle "$BACKTITLE" \
+			--inputbox "Enter your Domain without http:// (exmaple.org):" \
+			$HEIGHT $WIDTH \
+			3>&1 1>&2 2>&3 3>&- \
+			)
+				if [[ "$MYDOMAIN" =~ $CHECK_DOMAIN ]];then
+					break
+				else
+					dialog --infobox "[ERROR] Should we again practice how a Domain address looks?" $HEIGHT $WIDTH
+					sleep 1
+				fi
+		done
 
-	MYDOMAIN=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --inputbox "Enter your Domain without http:// (exmaple.org):" \
-                $HEIGHT $WIDTH \
-                3>&1 1>&2 2>&3 3>&- \
-	)
-
-	# ----------------------------------------------------------------
+# --- SSL ---
 CHOICE_HEIGHT=2
 MENU="Do you want to Use SSL?:"
 OPTIONS=(1 "Yes"
@@ -183,28 +177,26 @@ case $CHOICE in
 			USE_VALID_SSL="1"
 			while true
 			do
-					SSLMAIL=$(dialog --clear \
-					--backtitle "$BACKTITLE" \
-					--inputbox "Enter your valid E-Mail address:" \
-					$HEIGHT $WIDTH \
-					3>&1 1>&2 2>&3 3>&- \
-					)
-
-						if [[ "$SSLMAIL" =~ $CHECK_E_MAIL ]];then
-
-							break
-						else
-							dialog --infobox "[ERROR] Should we again practice how an e-mail address looks?" $HEIGHT $WIDTH
-							sleep 1
-
-						fi
+				SSLMAIL=$(dialog --clear \
+				--backtitle "$BACKTITLE" \
+				--inputbox "Enter your valid E-Mail address:" \
+				$HEIGHT $WIDTH \
+				3>&1 1>&2 2>&3 3>&- \
+				)
+					if [[ "$SSLMAIL" =~ $CHECK_E_MAIL ]];then
+						break
+					else
+						dialog --infobox "[ERROR] Should we again practice how an e-mail address looks?" $HEIGHT $WIDTH
+						sleep 1
+					fi
 			done
-            ;;
+           ;;
         2)
 			USE_VALID_SSL="0"
-            ;;
+           ;;
 esac
-# ----------------------------------------------------------------
+
+# --- MAILSERVER ---
 CHOICE_HEIGHT=3
 MENU="Do you want to Use Mailserver?:"
 OPTIONS=(1 "Yes"
@@ -225,7 +217,8 @@ case $CHOICE in
 			USE_WEBMAIL="0"
             ;;
 esac
-# ----------------------------------------------------------------
+
+# --- PHP ---
 CHOICE_HEIGHT=2
 MENU="Do you want to Use PHP5 oder PHP7?:"
 OPTIONS=(1 "PHP 5"
@@ -242,7 +235,8 @@ case $CHOICE in
 			USE_PHP5="0"
             ;;
 esac
-# ----------------------------------------------------------------
+
+# --- PHPMYADMIN ---
 CHOICE_HEIGHT=3
 MENU="Do you want to Use PHPMyAdmin?:"
 OPTIONS=(1 "Yes"
@@ -264,7 +258,7 @@ case $CHOICE in
             ;;
 esac
 
-	# ----------------------------------------------------------------
+# --- HTTP CONNECTIONS ---
 CHOICE_HEIGHT=2
 MENU="Do you want allow http-connections?:"
 OPTIONS=(1 "Yes"
@@ -279,40 +273,44 @@ case $CHOICE in
 			ALLOWHTTPCONNECTIONS="0"
             ;;
 esac
-	# ----------------------------------------------------------------
+
+# --- PMA_HTTPAUTH_USER ---
 if [ "$IAMEXPERT" = "1" ]; then
 	PMA_HTTPAUTH_USER=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --inputbox "Please choose an user for HTTP-Auth login:" \
-                $HEIGHT $WIDTH \
-                3>&1 1>&2 2>&3 3>&- \
+        --backtitle "$BACKTITLE" \
+        --inputbox "Please choose an user for HTTP-Auth login:" \
+        $HEIGHT $WIDTH \
+        3>&1 1>&2 2>&3 3>&- \
 	)
-	# ----------------------------------------------------------------
+	
+# --- MYSQL_PMADB_USER ---
 	MYSQL_PMADB_USER=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --inputbox "Please choose an user for MYSQL PHPMyAdmin Login:" \
-                $HEIGHT $WIDTH \
-                3>&1 1>&2 2>&3 3>&- \
+        --backtitle "$BACKTITLE" \
+		--inputbox "Please choose an user for MYSQL PHPMyAdmin Login:" \
+        $HEIGHT $WIDTH \
+        3>&1 1>&2 2>&3 3>&- \
 	)
-	# ----------------------------------------------------------------
+	
+# --- MYSQL_PMADB_NAME ---
 	MYSQL_PMADB_NAME=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
-                --inputbox "Please choose an DB-Name for MYSQL PHPMyAdmin:" \
-                $HEIGHT $WIDTH \
-                3>&1 1>&2 2>&3 3>&- \
+		--backtitle "$BACKTITLE" \
+        --inputbox "Please choose an DB-Name for MYSQL PHPMyAdmin:" \
+        $HEIGHT $WIDTH \
+		3>&1 1>&2 2>&3 3>&- \
 	)
 else
 	PMA_HTTPAUTH_USER="httpauth"
 	MYSQL_PMADB_USER="phpmyadmin"
 	MYSQL_PMADB_NAME="phpmyadmin"
 fi
-	# ----------------------------------------------------------------
+
 if [ "$IAMEXPERT" = "1" ]; then
-		# ----------------------------------------------------------------
+	# --- CLOUDFLARE ---
+	if [ "$IAMEXPERT" = "1" ]; then
 		CHOICE_HEIGHT=2
 		MENU="Do you want use Cloudflare?:"
 		OPTIONS=(1 "Yes"
-				 2 "No")
+				2 "No")
 		menu
 		clear
 		case $CHOICE in
@@ -323,15 +321,15 @@ if [ "$IAMEXPERT" = "1" ]; then
 					CLOUDFLARE="0"
 					;;
 		esac
-			# ----------------------------------------------------------------
-			if [ "$ALLOWHTTPCONNECTIONS" = "0" ]; then
-						# ----------------------------------------------------------------
-			CHOICE_HEIGHT=2
-			MENU="Do you want use HIGH SECURITY?:"
-			OPTIONS=(1 "Yes"
-					 2 "No")
-			menu
-			clear
+	
+	# --- HIGH SECURITY ---	
+	if [ "$ALLOWHTTPCONNECTIONS" = "0" ]; then
+		CHOICE_HEIGHT=2
+		MENU="Do you want use HIGH SECURITY?:"
+		OPTIONS=(1 "Yes"
+				2 "No")
+		menu
+		clear
 			case $CHOICE in
 					1)
 						HIGH_SECURITY="1"
@@ -339,33 +337,34 @@ if [ "$IAMEXPERT" = "1" ]; then
 					2)
 						HIGH_SECURITY="0"
 						;;
-			esac
-			fi
-		# ----------------------------------------------------------------
-		CHOICE_HEIGHT=2
-		MENU="Do you want use Debug Mode?:"
-		OPTIONS=(1 "Yes"
-				 2 "No")
-		menu
-		clear
-		case $CHOICE in
-				1)
-					DEBUG_IS_SET="1"
-					;;
-				2)
-					DEBUG_IS_SET="0"
-					;;
-		esac
+	esac
+	fi
+
+	# --- DEBUG ---	
+	CHOICE_HEIGHT=2
+	MENU="Do you want use Debug Mode?:"
+	OPTIONS=(1 "Yes"
+			2 "No")
+	menu
+	clear
+	case $CHOICE in
+			1)
+				DEBUG_IS_SET="1"
+				;;
+			2)
+				DEBUG_IS_SET="0"
+				;;
+	esac
 fi
 
-	# ----------------------------------------------------------------
-	if [ "$IAMEXPERT" = "0" ]; then
-		# If no expert, we set default values
-		CLOUDFLARE="0"
-		HIGH_SECURITY="0"
-		DEBUG_IS_SET="0"
-	fi
-	# ----------------------------------------------------------------
+# --- IAMEXPERT 0 ---
+if [ "$IAMEXPERT" = "0" ]; then
+	CLOUDFLARE="0"
+	HIGH_SECURITY="0"
+	DEBUG_IS_SET="0"
+fi
+
+# --- ADDONCONFIG? ---
 CHOICE_HEIGHT=2
 MENU="Do You need Addonconfig?:"
 OPTIONS=(1 "Yes"
@@ -382,7 +381,7 @@ case $CHOICE in
 esac
 
 CONFIG_COMPLETED="1"
-# Write Vars to Config file:
+
 rm -rf $CONFIGHELPER_PATH/configs/userconfig.cfg
 cat >> $CONFIGHELPER_PATH/configs/userconfig.cfg <<END
 #-----------------------------------------------------------#
@@ -426,10 +425,24 @@ cat >> $CONFIGHELPER_PATH/configs/userconfig.cfg <<END
 #-----------------------------------------------------------#
 END
 
-} # END confighelper_userconfig
+dialog --title "Userconfig" --textbox $CONFIGHELPER_PATH/configs/userconfig.cfg 50 250
+clear
 
-
-
+CHOICE_HEIGHT=2
+MENU="Settings correct?"
+OPTIONS=(1 "Yes"
+         2 "No")
+menu
+clear
+case $CHOICE in
+        1)
+			break
+            ;;
+        2)
+			confighelper_userconfig
+            ;;
+esac
+}
 
 source $CONFIGHELPER_PATH/configs/userconfig.cfg
 source $CONFIGHELPER_PATH/configs/addonconfig.cfg
