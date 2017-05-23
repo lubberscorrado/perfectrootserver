@@ -41,8 +41,12 @@ BACKTITLE="Perfect Root Server"
 TITLE="Perfect Root Server"
 MENU="Choose one of the following options:"
 
+
+	if [ ! -f /root/credentials.txt ]; then
+	#Perfectrootserver is not installed
 		OPTIONS=(1 "Install Perfect Root Server"
-				 2 "Exit")
+				 2 "Install Add-on"
+				 3 "Exit")
 
 		CHOICE=$(dialog --clear \
 						--nocancel \
@@ -60,7 +64,46 @@ MENU="Choose one of the following options:"
 					bash prsinstall.sh
 					;;
 				2)
+					bash addonsinstall.sh
+					;;
+				3)
 					echo "Exit"
 					exit 1
 					;;
 		esac
+
+	else
+	#Perfectrootserver is installed!
+			OPTIONS=(1 "Install Perfect Root Server"
+				 2 "Update Perfect Root Server"
+				 3 "Install Add-on"
+				 4 "Exit")
+
+		CHOICE=$(dialog --clear \
+						--nocancel \
+						--no-cancel \
+						--backtitle "$BACKTITLE" \
+						--title "$TITLE" \
+						--menu "$MENU" \
+						$HEIGHT $WIDTH $CHO
+						ICE_HEIGHT \
+						"${OPTIONS[@]}" \
+						2>&1 >/dev/tty)
+
+		clear
+		case $CHOICE in
+				1)
+					bash prsinstall.sh
+					;;
+				2)
+					bash addons/systemupdate.sh
+					;;
+				3)
+					bash addonsinstall.sh
+					;;
+				4)
+					echo "Exit"
+					exit 1
+					;;
+		esac
+	fi

@@ -28,6 +28,7 @@ source script/functions.sh
 source script/confighelper.sh
 source script/addonconfighelper.sh
 
+
 source script/checksystem.sh
 source script/logininformation.sh
 source script/instructions.sh
@@ -58,11 +59,21 @@ source script/vimbadmin.sh
 
 source script/firewall.sh
 
+#source script/finischer.sh
+
 # Addons
  source addons/ajenti.sh
  source addons/teamspeak3.sh
  source addons/minecraft.sh
  source addons/vsftpdinstall.sh
+ source addons/prestashopinstall.sh
+ source addons/piwik.sh
+
+
+# source addons/openvpn.sh
+# source addons/disablelogin.sh
+# source addons/addnewsite.sh
+# source addons/addnewmysqluser.sh
 
 # Start Installation
 #----------------------------------------------------
@@ -106,17 +117,31 @@ mailfilter
 roundcube
 vimbadmin
 
+# Special harding
+#policydweight
+
 firewall
 fail2ban
 phpmyadmin
 publickey
+
 
 # Addon functions
 addonlogininformation
 ajenti
 teamspeak3
 minecraft
-vsftpd
+#vsftpd
+
+# untestet
+#prestashopinstall
+#piwikinstall
+
+#openvpn
+#disablelogin
+#addnewsite
+#finischer
+
 
 # Only at End!
 logininformation

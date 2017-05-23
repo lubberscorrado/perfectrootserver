@@ -71,8 +71,8 @@ checksystem() {
 		apt-get -y --force-yes install lsb-release >>"$main_log" 2>>"$err_log"
 	fi
 
-	if [ $(lsb_release -cs) != 'jessie' ] || [ $(lsb_release -is) != 'Debian' ]; then
-        echo "${error} The script for now works only on $(textb Debian) $(textb 8.x)" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+	if [ $(lsb_release -cs) != 'stretch' ] || [ $(lsb_release -is) != 'Debian' ]; then
+        echo "${error} The script for now works only on $(textb Debian) $(textb 9.x)" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
         exit 1
 	fi
 

@@ -60,29 +60,6 @@ fi
 echo "${info} Installing prerequisites..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 echo "${warn} Some of the tasks could take a long time, please be patient!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
-cat > /etc/apt/apt.conf.d/default-release <<END
-APT::Default-Release "jessie";
-END
-
-cat > /etc/apt/sources.list <<END
-# Dotdeb
-deb http://packages.dotdeb.org jessie all
-deb-src http://packages.dotdeb.org jessie all
-
-
-# Debian
-deb 	http://security.debian.org/ jessie/updates main contrib non-free
-deb 	http://security.debian.org/ testing/updates main contrib non-free
-deb 	http://ftp.debian.org/debian/ jessie main contrib non-free
-deb-src http://ftp.debian.org/debian/ jessie main contrib non-free
-deb 	http://ftp.debian.org/debian/ testing main contrib non-free
-deb-src http://ftp.debian.org/debian/ testing main contrib non-free
-deb     http://ftp.debian.org/debian/ unstable main contrib non-free
-deb-src http://ftp.debian.org/debian/ unstable main contrib non-free
-deb     http://ftp.debian.org/debian/ experimental main contrib non-free
-deb-src http://ftp.debian.org/debian/ experimental main contrib non-free
-END
-
 wget -O ~/sources/dotdeb.gpg http://www.dotdeb.org/dotdeb.gpg >>"$main_log" 2>>"$err_log" && apt-key add ~/sources/dotdeb.gpg >>"$main_log" 2>>"$err_log"
 apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xcbcb082a1bb943db >>"$main_log" 2>>"$err_log"
 
