@@ -266,7 +266,8 @@ case $CHOICE in
 esac
 
 # --- PMA_HTTPAUTH_USER ---
-if [ "$IAMEXPERT" = "1" ]; then
+if [[ $IAMEXPERT == '1' ]] && [[ $USE_PMA == '1' ]]; then
+
 	PMA_HTTPAUTH_USER=$(dialog --clear \
         --backtitle "$BACKTITLE" \
         --inputbox "Please choose an user for HTTP-Auth login:" \
