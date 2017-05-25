@@ -40,7 +40,7 @@ if [ ${USE_AJENTI} == '1' ] && [ ${USE_VALID_SSL} == '1' ]; then
 	echo "${info} Installing Ajenti..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	wget -q http://repo.ajenti.org/debian/key -O- | apt-key add - >>"$main_log" 2>>"$err_log"
 	echo "deb http://repo.ajenti.org/debian main main debian" >> /etc/apt/sources.list
-	apt-get -qq update && apt-get -q -y --force-yes install ajenti >>"$main_log" 2>>"$err_log"
+	apt-get -qq update && apt-get -q -y --assume-yes install ajenti >>"$main_log" 2>>"$err_log"
 
 #gevent workaround -> https://github.com/ajenti/ajenti/issues/702 https://github.com/ajenti/ajenti/issues/870
 	sudo easy_install -U gevent==1.1b4 >>"$main_log" 2>>"$err_log"

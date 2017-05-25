@@ -215,7 +215,7 @@ else
 	echo "${info} Creating self-signed SSL certificates..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	openssl ecparam -genkey -name secp384r1 -out /etc/nginx/ssl/${MYDOMAIN}.key.pem >>"$main_log" 2>>"$err_log"
 	openssl req -new -sha256 -key /etc/nginx/ssl/${MYDOMAIN}.key.pem -out /etc/nginx/ssl/csr.pem -subj "/C=DE/ST=Private/L=Private/O=Private/OU=Private/CN=*.${MYDOMAIN}" >>"$main_log" 2>>"$err_log"
-	openssl req -x509 -days 365 -key /etc/nginx/ssl/${MYDOMAIN}.key.pem -in /etc/nginx/ssl/csr.pem -out /etc/nginx/ssl/${MYDOMAIN}.pem >>"$main_log" 2>>"$err_log"
+	openssl req -x509 -days 365 -key /etc/nginx/ssl/${MYDOMAIN}.key.pem -in /etc/nginx/ssl/csr.pem -out /etc/nginx/ssl/${MYDOMAIN}.pem -subj "/C=DE/ST=Private/L=Private/O=Private/OU=Private/CN=*.${MYDOMAIN}" >>"$main_log" 2>>"$err_log"
 fi
 
 HPKP1=$(openssl x509 -pubkey < /etc/nginx/ssl/${MYDOMAIN}.pem | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64)

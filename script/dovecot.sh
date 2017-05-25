@@ -29,12 +29,12 @@ dovecot() {
 if [ ${USE_MAILSERVER} == '1' ]; then
 echo "${info} Installing Dovecot..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
-openssl req -new -newkey rsa:4096 -sha256 -days 1095 -nodes -x509 -subj "/C=DE/ST=STATE/L=CITY/O=MAIL/CN=`hostname -f`" -keyout /etc/ssl/`hostname -f`.key  -out /etc/ssl/`hostname -f`.cer >>"$main_log" 2>>"$err_log"
-chmod 600 /etc/ssl/`hostname -f`.key >>"$main_log" 2>>"$err_log"
-cp /etc/ssl/`hostname -f`.cer /usr/local/share/ca-certificates/ >>"$main_log" 2>>"$err_log"
+openssl req -new -newkey rsa:4096 -sha256 -days 1095 -nodes -x509 -subj "/C=DE/ST=STATE/L=CITY/O=MAIL/CN=mail.${MYDOMAIN}" -keyout /etc/ssl/mail.${MYDOMAIN}.key  -out /etc/ssl/mail.${MYDOMAIN}.cer >>"$main_log" 2>>"$err_log"
+chmod 600 /etc/ssl/mail.${MYDOMAIN}.key >>"$main_log" 2>>"$err_log"
+cp /etc/ssl/mail.${MYDOMAIN}.cer /usr/local/share/ca-certificates/ >>"$main_log" 2>>"$err_log"
 update-ca-certificates >>"$main_log" 2>>"$err_log"
 
-apt-get install -f -y -t testing dovecot-common dovecot-core dovecot-imapd dovecot-lmtpd dovecot-managesieved dovecot-sieve dovecot-mysql >>"$main_log" 2>>"$err_log"
+DEBIAN_FRONTEND=noninteractive apt-get -y install dovecot-common dovecot-core dovecot-imapd dovecot-lmtpd dovecot-managesieved dovecot-sieve dovecot-mysql >>"$main_log" 2>>"$err_log"
 
 groupadd -g 5000 vmail >>"$main_log" 2>>"$err_log"
 useradd -g vmail -u 5000 vmail -d /var/vmail >>"$main_log" 2>>"$err_log"

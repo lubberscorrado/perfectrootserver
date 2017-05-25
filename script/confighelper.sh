@@ -431,7 +431,7 @@ menu
 clear
 case $CHOICE in
         1)
-			break
+			#break
             ;;
         2)
 			confighelper_userconfig

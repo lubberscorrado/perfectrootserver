@@ -35,7 +35,7 @@ openvpn() {
 #OpenVPN
 if [ ${USE_OPENVPN} == '1' ]; then
 echo "${info} Installing OPENVPN..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-apt-get -q -y --force-yes install openvpn easy-rsa >>"$main_log" 2>>"$err_log"
+apt-get -q -y --assume-yes install openvpn easy-rsa >>"$main_log" 2>>"$err_log"
 gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf
 
 sed -i 's|dh dh1024.pem|dh dh2048.pem|' /etc/openvpn/server.conf

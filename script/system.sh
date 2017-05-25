@@ -36,7 +36,7 @@ ff02::2 ip6-allrouters
 END
 
 if [[ -z $(dpkg --get-selections | grep -E "^dbus.*install$") ]]; then
-	apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get -y --force-yes install dbus >>"$main_log" 2>>"$err_log"
+	apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get -y --assume-yes install dbus >>"$main_log" 2>>"$err_log"
 fi
 
 	echo -e "${IPADR} ${MYDOMAIN} $(echo ${MYDOMAIN} | cut -f 1 -d '.')" >> /etc/hosts
@@ -63,11 +63,11 @@ echo "${warn} Some of the tasks could take a long time, please be patient!" | aw
 wget -O ~/sources/dotdeb.gpg http://www.dotdeb.org/dotdeb.gpg >>"$main_log" 2>>"$err_log" && apt-key add ~/sources/dotdeb.gpg >>"$main_log" 2>>"$err_log"
 apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xcbcb082a1bb943db >>"$main_log" 2>>"$err_log"
 
-apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get -y upgrade >>"$main_log" 2>>"$err_log"
+apt-get -y upgrade >>"$main_log" 2>>"$err_log"
 
-apt-get -y --force-yes install aptitude ssl-cert whiptail apt-utils jq openssl-blacklist glibc-doc libc6-dev/stable >>"$main_log" 2>>"$err_log"
+apt-get -y --assume-yes install ssl-cert whiptail apt-utils jq glibc-doc libc6-dev >>"$main_log" 2>>"$err_log"
 
-DEBIAN_FRONTEND=noninteractive aptitude -y install libldap2-dev/stable apache2-threaded-dev apache2-utils apt-listchanges arj autoconf automake bison bsd-mailx build-essential bzip2 ca-certificates cabextract checkinstall curl dnsutils file flex git htop libapr1-dev libaprutil1 libaprutil1-dev libauthen-sasl-perl daemon libawl-php libcunit1-dev libcrypt-ssleay-perl libcurl4-openssl-dev libdbi-perl libgeoip-dev libio-socket-ssl-perl libio-string-perl liblockfile-simple-perl liblogger-syslog-perl libmail-dkim-perl libmail-spf-perl libmime-base64-urlsafe-perl libnet-dns-perl libnet-ident-perl libnet-LDAP-perl libnet1 libnet1-dev libpam-dev libpcre-ocaml-dev libpcre3 libpcre3-dev libreadline6-dev libtest-tempdir-perl libtool libuv-dev libwww-perl libxml2 libxml2-dev/stable libxml2-utils libxslt1-dev libyaml-dev lzop mariadb-server mc memcached mlocate nettle-dev nomarch pkg-config python-setuptools python-dev python-software-properties rkhunter software-properties-common sudo unzip vim-nox zip zlib1g zlib1g-dbg zlib1g-dev zoo >>"$main_log" 2>>"$err_log"
+DEBIAN_FRONTEND=noninteractive apt-get -y install libldap2-dev apache2-dev apache2-utils apt-listchanges arj autoconf automake bison bsd-mailx build-essential bzip2 ca-certificates cabextract checkinstall curl dnsutils file flex git htop libapr1-dev libaprutil1 libaprutil1-dev libauthen-sasl-perl daemon libawl-php libcunit1-dev libcrypt-ssleay-perl libcurl4-openssl-dev libdbi-perl libgeoip-dev libio-socket-ssl-perl libio-string-perl liblockfile-simple-perl liblogger-syslog-perl libmail-dkim-perl libmail-spf-perl libmime-base64-urlsafe-perl libnet-dns-perl libnet-ident-perl libnet-ldap-perl libnet1 libnet1-dev libpam-dev libpcre-ocaml-dev libpcre3 libpcre3-dev libreadline6-dev libtest-tempdir-perl libtool libwww-perl libxml2 libxml2-dev libxml2-utils libxslt1-dev libyaml-dev lzop mariadb-server mc memcached mlocate nettle-dev nomarch pkg-config python-setuptools python-dev python3-software-properties rkhunter software-properties-common sudo unzip vim-nox zip zlib1g zlib1g-dbg zlib1g-dev zoo >>"$main_log" 2>>"$err_log"
 
 if [ "$?" -ne "0" ]; then
 	echo "${error} Package installation failed!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'

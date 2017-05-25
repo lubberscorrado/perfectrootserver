@@ -31,7 +31,7 @@
 #----------------------------------------------------------------------#
 
 piwikinstall() {
-echo "${info} Installing Prestashop" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+echo "${info} Installing Piwik" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
 if [ ${USE_PIWIK} == '1' ]; then
 

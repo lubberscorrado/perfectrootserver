@@ -79,12 +79,11 @@ source script/firewall.sh
 #----------------------------------------------------
 functionsprs
 #Alpha!
+prerequisites
+
 confighelper_generate_passwords
 
-	while true
-	do
-		confighelper_userconfig
-	done
+confighelper_userconfig
 
 if [[ ${ADDONCONFIG_COMPLETED} == "0" ]]; then
 	while true

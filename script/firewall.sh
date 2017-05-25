@@ -29,7 +29,7 @@ echo "${info} Installing Arno-Iptables-Firewall..." | awk '{ print strftime("[%H
 
 # ipset
 if [ $(dpkg-query -l | grep ipset | wc -l) -ne 1 ]; then
-	apt-get -y --force-yes install ipset >>"$main_log" 2>>"$err_log"
+	apt-get -y --assume-yes install ipset >>"$main_log" 2>>"$err_log"
 fi
 
 git clone https://github.com/arno-iptables-firewall/aif.git ~/sources/aif -q

@@ -25,7 +25,7 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 
-checksystem() {
+prerequisites() {
 
 	echo
 	echo
@@ -35,27 +35,44 @@ checksystem() {
 	echo
 	echo "$(date +"[%T]") | ${info} Welcome to the Perfect Rootserver installation!"
 	echo "$(date +"[%T]") | ${info} Please wait while the installer is preparing for the first use..."
-	echo "$(date +"[%T]") | ${info} Checking your system..."
-
-	#-------------libcrack2
+	
+	apt-get update -y >>"$main_log" 2>>"$err_log"
+	
+#-------------libcrack2
 	if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
-		apt-get -y --force-yes install libcrack2 >>"$main_log" 2>>"$err_log"
+		apt-get -y --assume-yes install libcrack2 >>"$main_log" 2>>"$err_log"
 	fi
 	#-------------dnsutils
 	if [ $(dpkg-query -l | grep dnsutils | wc -l) -ne 1 ]; then
-		apt-get -y --force-yes install dnsutils >>"$main_log" 2>>"$err_log" error_exit "Cannot install dnsutils! Aborting"
+		apt-get -y --assume-yes install dnsutils >>"$main_log" 2>>"$err_log" || error_exit "Cannot install dnsutils! Aborting"
 	fi
-	#-------------openssl------TESTING
+	
+	#-------------dnsutils
+	if [ $(dpkg-query -l | grep netcat | wc -l) -ne 1 ]; then
+		apt-get -y --assume-yes install netcat >>"$main_log" 2>>"$err_log" || error_exit "Cannot install netcat! Aborting"
+	fi
+	
+	#-------------openssl------
 	if [ $(dpkg-query -l | grep openssl | wc -l) -ne 1 ]; then
-		apt-get install -f -y -t testing openssl >>"$main_log" 2>>"$err_log"
+		apt-get -y --assume-yes install openssl >>"$main_log" 2>>"$err_log"
 	fi
+	
+	if [ $(dpkg-query -l | grep gawk | wc -l) -ne 1 ]; then
+		apt-get -y --assume-yes install gawk >>"$main_log" 2>>"$err_log"
+	fi
+	
+	if [ $(dpkg-query -l | grep lsb-release | wc -l) -ne 1 ]; then
+		apt-get -y --assume-yes install lsb-release >>"$main_log" 2>>"$err_log"
+	fi
+	
+}
+
+checksystem() {
+	
+	echo "$(date +"[%T]") | ${info} Checking your system..."
 
 	#Get out nfs
 	apt-get -y --purge remove nfs-kernel-server nfs-common portmap rpcbind >>"$main_log" 2>>"$err_log"
-
-	if [ $(dpkg-query -l | grep gawk | wc -l) -ne 1 ]; then
-		apt-get -y --force-yes install gawk >>"$main_log" 2>>"$err_log"
-	fi
 
 	if [ $USER != 'root' ]; then
         echo "${error} Please run the script as root" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
@@ -65,10 +82,6 @@ checksystem() {
 	if [[ -z $(which nc) ]]; then
 		echo "${error} Please install $(textb netcat) before running this script" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 		exit 1
-	fi
-
-	if [ $(dpkg-query -l | grep lsb-release | wc -l) -ne 1 ]; then
-		apt-get -y --force-yes install lsb-release >>"$main_log" 2>>"$err_log"
 	fi
 
 	if [ $(lsb_release -cs) != 'stretch' ] || [ $(lsb_release -is) != 'Debian' ]; then
@@ -91,7 +104,7 @@ checksystem() {
 		echo > /dev/null
 	else
 		if [ $(dpkg-query -l | grep facter | wc -l) -ne 1 ]; then
-			apt-get -y --force-yes install facter >>"$main_log" 2>>"$err_log"
+			apt-get -y --assume-yes install facter >>"$main_log" 2>>"$err_log"
 		fi
 
 		if	[ "$(facter virtual)" == 'physical' ] || [ "$(facter virtual)" == 'kvm' ]; then
@@ -131,29 +144,29 @@ checksystem() {
 		RSA_KEY_SIZE="256"
 	fi
 
-	if [[ ${CLOUDFLARE} != '1' ]]; then
-
-		if [[ ${FQDNIP} != ${IPADR} ]]; then
-			echo "${error} The domain (${MYDOMAIN} - ${FQDNIP}) does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-			echo "${error} Please check the userconfig and/or your DNS-Records." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-			exit 1
-
-		else
-			if [[ ${USE_VALID_SSL} == '1' ]]; then
-					while true; do
-						if [[ ${WWWIP} != ${IPADR} ]]; then
-							echo "${error} www.${MYDOMAIN} does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-							echo
-							echo "${warn} Please check your DNS-Records." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-							echo "${info} Press $(textb ENTER) to repeat this check or $(textb CTRL-C) to cancel the process" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-							read -s -n 1 i
-						else
-							break
-						fi
-					done
-			fi
-		fi
-	fi
+#	if [[ ${CLOUDFLARE} != '1' ]]; then
+#
+#		if [[ ${FQDNIP} != ${IPADR} ]]; then
+#			echo "${error} The domain (${MYDOMAIN} - ${FQDNIP}) does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#			echo "${error} Please check the userconfig and/or your DNS-Records." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#			exit 1
+#
+#		else
+#			if [[ ${USE_VALID_SSL} == '1' ]]; then
+#					while true; do
+#						if [[ ${WWWIP} != ${IPADR} ]]; then
+#							echo "${error} www.${MYDOMAIN} does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#							echo
+#							echo "${warn} Please check your DNS-Records." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#							echo "${info} Press $(textb ENTER) to repeat this check or $(textb CTRL-C) to cancel the process" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#							read -s -n 1 i
+#						else
+#							break
+#						fi
+#					done
+#			fi
+#		fi
+#	fi
 
 	if [[ ${DEBUG_IS_SET} == '1' ]]; then
 		set -x
