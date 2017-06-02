@@ -28,7 +28,11 @@
 mailfilter() {
 if [ ${USE_MAILSERVER} == '1' ]; then
 echo "${info} Installing Mailfilter..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-DEBIAN_FRONTEND=noninteractive apt-get -y install amavisd-new clamav-daemon spamassassin >>"$main_log" 2>>"$err_log"
+#libdbd-mysql-perl and libmysqlclient-dev -> for amavis
+apt-get install -y libdbd-mysql-perl 
+
+DEBIAN_FRONTEND=noninteractive apt-get -y install amavisd-new clamav-daemon spamassassin
+
 
 cat >> /etc/amavis/conf.d/50-user << 'EOF1'
 use strict;

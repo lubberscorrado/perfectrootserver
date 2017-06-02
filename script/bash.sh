@@ -30,9 +30,9 @@ bashinstall() {
 echo "${info} Downloading GNU bash & latest security patches..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 cd ~/sources
 mkdir bash && cd $_
-wget https://ftp.gnu.org/gnu/bash/bash-${BASH_VERSION}.tar.gz >>"$main_log" 2>>"$err_log"
+wget https://ftp.gnu.org/gnu/bash/bash-${BASH_VERSION}.tar.gz >>"$main_log" 2>>"$err_log" || error_exit "Cannot download Bash! Aborting"
 
-wget -r -np -nd --reject="index.html*,.sig" https://ftp.gnu.org/gnu/bash/bash-${BASH_VERSION}-patches/ >>"$main_log" 2>>"$err_log"
+wget -r -np -nd --reject="index.html*,.sig" https://ftp.gnu.org/gnu/bash/bash-${BASH_VERSION}-patches/ >>"$main_log" 2>>"$err_log" || error_exit "Cannot download Bash Patches! Aborting"
 nfiles=$(ls | wc -l)
 
 tar zxf bash-${BASH_VERSION}.tar.gz && cd bash-${BASH_VERSION} >>"$main_log" 2>>"$err_log"
@@ -43,8 +43,8 @@ for i in ../bash${BASH}-[0-9][0-9][0-9]; do patch -p0 -s < $i; done
 
 echo "${info} Compiling GNU bash..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 ./configure --prefix=/usr/local >>"$make_log" 2>>"$make_err_log"
-make >>"$make_log" 2>>"$make_err_log"
-make install >>"$make_log" 2>>"$make_err_log"
+make >>"$make_log" 2>>"$make_err_log" || error_exit "Cannot make Bash! Aborting"
+make install >>"$make_log" 2>>"$make_err_log" || error_exit "Cannot install Bash! Aborting"
 cp -f /usr/local/bin/bash /bin/bash
 sleep 2
 

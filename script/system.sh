@@ -60,18 +60,26 @@ fi
 echo "${info} Installing prerequisites..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 echo "${warn} Some of the tasks could take a long time, please be patient!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
-wget -O ~/sources/dotdeb.gpg http://www.dotdeb.org/dotdeb.gpg >>"$main_log" 2>>"$err_log" && apt-key add ~/sources/dotdeb.gpg >>"$main_log" 2>>"$err_log"
-apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xcbcb082a1bb943db >>"$main_log" 2>>"$err_log"
-
 apt-get -y upgrade >>"$main_log" 2>>"$err_log"
 
 apt-get -y --assume-yes install ssl-cert whiptail apt-utils jq glibc-doc libc6-dev >>"$main_log" 2>>"$err_log"
 
-DEBIAN_FRONTEND=noninteractive apt-get -y install libldap2-dev apache2-dev apache2-utils apt-listchanges arj autoconf automake bison bsd-mailx build-essential bzip2 ca-certificates cabextract checkinstall curl dnsutils file flex git htop libapr1-dev libaprutil1 libaprutil1-dev libauthen-sasl-perl daemon libawl-php libcunit1-dev libcrypt-ssleay-perl libcurl4-openssl-dev libdbi-perl libgeoip-dev libio-socket-ssl-perl libio-string-perl liblockfile-simple-perl liblogger-syslog-perl libmail-dkim-perl libmail-spf-perl libmime-base64-urlsafe-perl libnet-dns-perl libnet-ident-perl libnet-ldap-perl libnet1 libnet1-dev libpam-dev libpcre-ocaml-dev libpcre3 libpcre3-dev libreadline6-dev libtest-tempdir-perl libtool libwww-perl libxml2 libxml2-dev libxml2-utils libxslt1-dev libyaml-dev lzop mariadb-server mc memcached mlocate nettle-dev nomarch pkg-config python-setuptools python-dev python3-software-properties rkhunter software-properties-common sudo unzip vim-nox zip zlib1g zlib1g-dbg zlib1g-dev zoo >>"$main_log" 2>>"$err_log"
+DEBIAN_FRONTEND=noninteractive apt-get -y install dirmngr libldap2-dev apache2-dev apache2-utils apt-listchanges arj autoconf automake bison bsd-mailx build-essential bzip2 ca-certificates cabextract checkinstall curl dnsutils file flex git htop libapr1-dev libaprutil1 libaprutil1-dev libauthen-sasl-perl daemon libawl-php libcunit1-dev libcrypt-ssleay-perl libcurl4-openssl-dev libdbi-perl libgeoip-dev libio-socket-ssl-perl libio-string-perl liblockfile-simple-perl liblogger-syslog-perl libmail-dkim-perl libmail-spf-perl libmime-base64-urlsafe-perl libnet-dns-perl libnet-ident-perl libnet-ldap-perl libnet1 libnet1-dev libpam-dev libpcre-ocaml-dev libpcre3 libpcre3-dev libreadline6-dev libtest-tempdir-perl libtool libwww-perl libxml2 libxml2-dev libxml2-utils libxslt1-dev libyaml-dev lzop mc memcached mlocate nettle-dev nomarch pkg-config python-setuptools python-dev python3-software-properties rkhunter software-properties-common sudo unzip vim-nox zip zlib1g zlib1g-dbg zlib1g-dev zoo >>"$main_log" 2>>"$err_log"
 
 if [ "$?" -ne "0" ]; then
 	echo "${error} Package installation failed!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	exit 1
+fi
+
+echo "${info} Installing Composer..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+if [[ ${USE_MAILSERVER} == '1' ]] || [[ ${USE_PMA} == '1' ]]; then
+#Install Composer
+cd ~/sources
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" >>"$main_log" 2>>"$err_log"
+php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" >>"$main_log" 2>>"$err_log" || error_exit "Cannot verify Composer Hash! Aborting"
+php composer-setup.php >>"$main_log" 2>>"$err_log"
+php -r "unlink('composer-setup.php');"
+mv composer.phar /usr/local/bin/composer
 fi
 
 # System Tuning
@@ -119,7 +127,6 @@ net.ipv4.icmp_echo_ignore_broadcasts = 1
 net.ipv4.icmp_ignore_bogus_error_responses = 1
 net.ipv4.ip_forward = 0
 net.ipv4.ip_local_port_range = 16384 65535
-net.ipv4.ipfrag_high_thresh = 512000
 net.ipv4.ipfrag_low_thresh = 446464
 net.ipv4.neigh.default.gc_interval = 30
 net.ipv4.neigh.default.gc_thresh1 = 32
@@ -157,7 +164,6 @@ net.ipv4.tcp_window_scaling = 1
 net.ipv4.tcp_wmem = 8192 65536 16777216
 net.ipv4.udp_rmem_min = 16384
 net.ipv4.udp_wmem_min = 16384
-net.ipv6.conf.all.accept_ra = 0
 net.ipv6.conf.all.accept_redirects = 0
 net.ipv6.conf.all.accept_source_route = 0
 net.ipv6.conf.all.autoconf = 0
@@ -167,8 +173,6 @@ net.ipv6.conf.default.accept_redirects = 0
 net.ipv6.conf.default.accept_source_route = 0
 net.ipv6.conf.default.autoconf=0
 net.ipv6.conf.default.forwarding = 0
-net.ipv6.conf.eth0.accept_ra=0
-net.ipv6.conf.eth0.autoconf=0
 net.ipv6.route.flush = 1
 net.unix.max_dgram_qlen = 50
 vm.dirty_background_ratio = 5
@@ -185,6 +189,13 @@ net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
 net.ipv6.conf.${INTERFACE}.disable_ipv6 = 1
 END
+
+
+#net.ipv6.conf.all.accept_ra = 0 changed
+#net.ipv4.ipfrag_high_thresh = 512000
+#net.ipv6.conf.eth0.autoconf=0
+#net.ipv6.conf.eth0.accept_ra=0
+
 
 # Enable changes
 sysctl -p >>"$main_log" 2>>"$err_log"

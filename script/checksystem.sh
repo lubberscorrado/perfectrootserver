@@ -40,7 +40,7 @@ prerequisites() {
 	
 #-------------libcrack2
 	if [ $(dpkg-query -l | grep libcrack2 | wc -l) -ne 1 ]; then
-		apt-get -y --assume-yes install libcrack2 >>"$main_log" 2>>"$err_log"
+		apt-get -y --assume-yes install libcrack2 >>"$main_log" 2>>"$err_log" || error_exit "Cannot install libcrack2! Aborting"
 	fi
 	#-------------dnsutils
 	if [ $(dpkg-query -l | grep dnsutils | wc -l) -ne 1 ]; then
@@ -54,15 +54,15 @@ prerequisites() {
 	
 	#-------------openssl------
 	if [ $(dpkg-query -l | grep openssl | wc -l) -ne 1 ]; then
-		apt-get -y --assume-yes install openssl >>"$main_log" 2>>"$err_log"
+		apt-get -y --assume-yes install openssl >>"$main_log" 2>>"$err_log" || error_exit "Cannot install openssl! Aborting"
 	fi
 	
 	if [ $(dpkg-query -l | grep gawk | wc -l) -ne 1 ]; then
-		apt-get -y --assume-yes install gawk >>"$main_log" 2>>"$err_log"
+		apt-get -y --assume-yes install gawk >>"$main_log" 2>>"$err_log" || error_exit "Cannot install gawk! Aborting"
 	fi
 	
 	if [ $(dpkg-query -l | grep lsb-release | wc -l) -ne 1 ]; then
-		apt-get -y --assume-yes install lsb-release >>"$main_log" 2>>"$err_log"
+		apt-get -y --assume-yes install lsb-release >>"$main_log" 2>>"$err_log" || error_exit "Cannot install lsb-release! Aborting"
 	fi
 	
 }
@@ -75,18 +75,11 @@ checksystem() {
 	apt-get -y --purge remove nfs-kernel-server nfs-common portmap rpcbind >>"$main_log" 2>>"$err_log"
 
 	if [ $USER != 'root' ]; then
-        echo "${error} Please run the script as root" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-        exit 1
-	fi
-
-	if [[ -z $(which nc) ]]; then
-		echo "${error} Please install $(textb netcat) before running this script" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-		exit 1
+        error_exit "Please run the script as root" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	fi
 
 	if [ $(lsb_release -cs) != 'stretch' ] || [ $(lsb_release -is) != 'Debian' ]; then
-        echo "${error} The script for now works only on $(textb Debian) $(textb 9.x)" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-        exit 1
+        error_exit "The script for now works only on $(textb Debian) $(textb 9.x)" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	fi
 
 	if [ $(grep MemTotal /proc/meminfo | awk '{print $2}') -lt 1000000 ]; then
@@ -96,8 +89,7 @@ checksystem() {
 	fi
 
 	if [ $(dpkg-query -l | grep dmidecode | wc -l) -ne 1 ]; then
-    	echo "${error} This script does not support the virtualization technology!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-    	exit 1
+    	error_exit "This script does not support the virtualization technology!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	fi
 
 	if [ "$(dmidecode -s system-product-name)" == 'Bochs' ] || [ "$(dmidecode -s system-product-name)" == 'KVM' ] || [ "$(dmidecode -s system-product-name)" == 'All Series' ] || [ "$(dmidecode -s system-product-name)" == 'OpenStack Nova' ] || [ "$(dmidecode -s system-product-name)" == 'Standard' ]; then
@@ -134,8 +126,7 @@ checksystem() {
 	fi
 
 	if [[ ${HIGH_SECURITY} = '3' ]] && [[ ${DEBUG_IS_SET} = '0' ]]; then
-		  echo "${error} To set the RSA value to 256, you have to get into the debug mode! I'm sorry bro" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-        exit 1
+		  error_exit "To set the RSA value to 256, you have to get into the debug mode! I'm sorry bro" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	fi
 
 

@@ -29,7 +29,7 @@ dovecot() {
 if [ ${USE_MAILSERVER} == '1' ]; then
 echo "${info} Installing Dovecot..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
-openssl req -new -newkey rsa:4096 -sha256 -days 1095 -nodes -x509 -subj "/C=DE/ST=STATE/L=CITY/O=MAIL/CN=mail.${MYDOMAIN}" -keyout /etc/ssl/mail.${MYDOMAIN}.key  -out /etc/ssl/mail.${MYDOMAIN}.cer >>"$main_log" 2>>"$err_log"
+openssl req -new -newkey rsa:4096 -sha256 -days 1095 -nodes -x509 -subj "/C=DE/ST=STATE/L=CITY/O=MAIL/CN=mail.${MYDOMAIN}" -keyout /etc/ssl/mail.${MYDOMAIN}.key  -out /etc/ssl/mail.${MYDOMAIN}.cer >>"$main_log" 2>>"$err_log" || error_exit "Cannot create Mail key! Aborting"
 chmod 600 /etc/ssl/mail.${MYDOMAIN}.key >>"$main_log" 2>>"$err_log"
 cp /etc/ssl/mail.${MYDOMAIN}.cer /usr/local/share/ca-certificates/ >>"$main_log" 2>>"$err_log"
 update-ca-certificates >>"$main_log" 2>>"$err_log"

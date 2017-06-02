@@ -33,12 +33,6 @@ echo "${info} Installing Vimbadmin..." | awk '{ print strftime("[%H:%M:%S] |"), 
 mysql --defaults-file=/etc/mysql/debian.cnf -e "CREATE DATABASE vimbadmin; GRANT ALL ON vimbadmin.* TO 'vimbadmin'@'localhost' IDENTIFIED BY '${VIMB_MYSQL_PASS}'; FLUSH PRIVILEGES;" >>"$main_log" 2>>"$err_log" || error_exit "Cannot create Vimbadmin Database! Aborting"
 
 #Download Vimbadmin via Composer
-cd ~/sources
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" >>"$main_log" 2>>"$err_log"
-php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" >>"$main_log" 2>>"$err_log" || error_exit "Cannot verify Composer Hash! Aborting"
-php composer-setup.php >>"$main_log" 2>>"$err_log"
-php -r "unlink('composer-setup.php');"
-mv composer.phar /usr/local/bin/composer
 composer create-project opensolutions/vimbadmin /srv/vimbadmin -s dev -n --keep-vcs >>"$main_log" 2>>"$err_log" || error_exit "Cannot create Vimbadmin project! Aborting"
 
 chown -R www-data: /srv/vimbadmin/public
@@ -69,7 +63,7 @@ mkdir -p /srv/archives
 cp /srv/vimbadmin/public/.htaccess.dist /srv/vimbadmin/public/.htaccess
 
 cd /srv/vimbadmin/
-./bin/doctrine2-cli.php orm:schema-tool:create >>"$main_log" 2>>"$err_log"
+./bin/doctrine2-cli.php orm:schema-tool:create #>>"$main_log" 2>>"$err_log"
 
 #Crontabs
 (crontab -l && echo "# Die 10. Minute jeder 2. Stunde") | crontab -
