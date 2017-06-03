@@ -63,7 +63,7 @@ mkdir -p /srv/archives
 cp /srv/vimbadmin/public/.htaccess.dist /srv/vimbadmin/public/.htaccess
 
 cd /srv/vimbadmin/
-./bin/doctrine2-cli.php orm:schema-tool:create #>>"$main_log" 2>>"$err_log"
+./bin/doctrine2-cli.php orm:schema-tool:create >>"$main_log" 2>>"$err_log"
 
 #Crontabs
 (crontab -l && echo "# Die 10. Minute jeder 2. Stunde") | crontab -

@@ -28,9 +28,9 @@
 mailfilter() {
 if [ ${USE_MAILSERVER} == '1' ]; then
 echo "${info} Installing Mailfilter..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-#libdbd-mysql-perl and libmysqlclient-dev -> for amavis
 apt-get install -y libdbd-mysql-perl 
 
+DEBIAN_FRONTEND=noninteractive apt-get -y install rar unrar arj zip bzip2 gzip cpio file lzop nomarch cabextract ripole rpm pax p7zip zoo ncompress
 DEBIAN_FRONTEND=noninteractive apt-get -y install amavisd-new clamav-daemon spamassassin
 
 

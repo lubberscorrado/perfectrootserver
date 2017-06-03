@@ -24,28 +24,20 @@
 #################################
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
-clear
-echo "Perfect Root Server"
-echo "Preparing menu..."
-apt-get -qq update
-
-#-------------dialog
-if [ ! $(dpkg-query -l | grep dialog | wc -l) -ne 2 ]; then
-	apt-get -qq install dialog >/dev/null 2>&1
-fi
 
 HEIGHT=30
-WIDTH=60
+WIDTH=80
 CHOICE_HEIGHT=6
-BACKTITLE="Perfect Root Server"
-TITLE="Perfect Root Server"
+BACKTITLE="Perfect Root Server Standalone Add-ons"
+TITLE="Perfect Root Server Standalone Add-ons"
 MENU="Choose one of the following options:"
 
-		OPTIONS=(1 "Install Perfect Root Server"
-				 2 "Update Perfect Root Server"
-				 3 "Install Add-ons (PRS Installation required)"
-				 4 "Install Standalone Add-ons"
-				 5 "Exit")
+OPTIONS=(1 "Install: Ajenti"
+         2 "Install: Minecraft"
+         3 "Install: Teamspeak 3"
+		 4 "Install: VSFTPD"
+		 5 "Back"
+		 6 "Exit")
 
 		CHOICE=$(dialog --clear \
 						--nocancel \
@@ -57,22 +49,29 @@ MENU="Choose one of the following options:"
 						"${OPTIONS[@]}" \
 						2>&1 >/dev/tty)
 
-		clear
-		case $CHOICE in
-				1)
-					bash prsinstall.sh
-					;;
-				2)
-					bash systemupdate.sh
-					;;
-				3)
-					bash addons.sh
-					;;
-				4)
-					bash standalone_addons.sh
-					;;
-				4)
-					echo "Exit"
-					exit 1
-					;;
-		esac
+clear
+case $CHOICE in
+        1)
+			echo "You selected: Install Ajenti"
+            bash addons/standalone/ajenti.sh
+            ;;
+        2)
+			echo "You selected: Install Minecraft"
+            bash addons/standalone/minecraft.sh
+            ;;
+        3)
+            echo "You selected: Install Teamspeak 3"
+			bash addons/standalone/teamspeak3.sh
+            ;;
+		4)
+           echo "You selected: Install VSFTPD"
+		   bash addons/standalone/vsftpdinstall.sh
+            ;;
+		5)
+		   bash install.sh
+            ;;		
+		6)
+			echo "Exit"
+			exit 1
+            ;;
+esac

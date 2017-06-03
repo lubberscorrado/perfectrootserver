@@ -211,19 +211,19 @@ esac
 
 # --- PHP ---
 CHOICE_HEIGHT=2
-MENU="Do you want to Use PHP5 oder PHP7?:"
-OPTIONS=(1 "PHP 5"
-         2 "PHP 7")
+MENU="Do you want to Use PHP 7 oder PHP 7.1?:"
+OPTIONS=(1 "PHP 7"
+         2 "PHP 7.1")
 menu
 clear
 case $CHOICE in
         1)
-			USE_PHP5="1"
-			USE_PHP7="0"
+			USE_PHP7="1"
+			USE_PHP71="0"
             ;;
         2)
-			USE_PHP7="1"
-			USE_PHP5="0"
+			USE_PHP7="0"
+			USE_PHP71="1"
             ;;
 esac
 
@@ -231,7 +231,7 @@ esac
 CHOICE_HEIGHT=3
 MENU="Do you want to Use PHPMyAdmin?:"
 OPTIONS=(1 "Yes"
-		 2 "Yes, but restrcited"
+		 2 "Yes, but restricted"
          3 "No")
 menu
 clear

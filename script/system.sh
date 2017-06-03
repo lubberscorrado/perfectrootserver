@@ -1,3 +1,4 @@
+
 #!/bin/bash
 # The perfect rootserver - Your Webserverinstallation Script!
 # by shoujii | BoBBer446 > 2017
@@ -36,25 +37,17 @@ ff02::2 ip6-allrouters
 END
 
 if [[ -z $(dpkg --get-selections | grep -E "^dbus.*install$") ]]; then
-	apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get -y --assume-yes install dbus >>"$main_log" 2>>"$err_log"
+	apt-get update -y >>"$main_log" 2>>"$err_log" && apt-get -y --assume-yes install dbus >>"$main_log" 2>>"$err_log" || error_exit "Cannot install dbus! Aborting"
 fi
 
 	echo -e "${IPADR} ${MYDOMAIN} $(echo ${MYDOMAIN} | cut -f 1 -d '.')" >> /etc/hosts
-	#hostnamectl set-hostname $(echo ${MYDOMAIN} | cut -f 1 -d '.')
 	hostnamectl set-hostname mail.${MYDOMAIN}
 	echo "${MYDOMAIN}" > /etc/mailname
 
 echo "${info} Setting your hostname & timezone..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 if [[ -f /usr/share/zoneinfo/${TIMEZONE} ]] ; then
 	echo ${TIMEZONE} > /etc/timezone
-	dpkg-reconfigure -f noninteractive tzdata >>"$main_log" 2>>"$err_log"
-	if [ "$?" -ne "0" ]; then
-		echo "${error} Timezone configuration failed: dpkg returned exit code != 0" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-		exit 1
-		fi
-	else
-		echo "${error} Cannot set your timezone: timezone is unknown" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-		exit 1
+	dpkg-reconfigure -f noninteractive tzdata >>"$main_log" 2>>"$err_log" || error_exit "Cannot set Timezone! Aborting"
 fi
 
 echo "${info} Installing prerequisites..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
@@ -62,24 +55,27 @@ echo "${warn} Some of the tasks could take a long time, please be patient!" | aw
 
 apt-get -y upgrade >>"$main_log" 2>>"$err_log"
 
-apt-get -y --assume-yes install ssl-cert whiptail apt-utils jq glibc-doc libc6-dev >>"$main_log" 2>>"$err_log"
+apt-get -y --assume-yes install ssl-cert whiptail apt-utils glibc-doc libc6-dev >>"$main_log" 2>>"$err_log"
 
-DEBIAN_FRONTEND=noninteractive apt-get -y install dirmngr libldap2-dev apache2-dev apache2-utils apt-listchanges arj autoconf automake bison bsd-mailx build-essential bzip2 ca-certificates cabextract checkinstall curl dnsutils file flex git htop libapr1-dev libaprutil1 libaprutil1-dev libauthen-sasl-perl daemon libawl-php libcunit1-dev libcrypt-ssleay-perl libcurl4-openssl-dev libdbi-perl libgeoip-dev libio-socket-ssl-perl libio-string-perl liblockfile-simple-perl liblogger-syslog-perl libmail-dkim-perl libmail-spf-perl libmime-base64-urlsafe-perl libnet-dns-perl libnet-ident-perl libnet-ldap-perl libnet1 libnet1-dev libpam-dev libpcre-ocaml-dev libpcre3 libpcre3-dev libreadline6-dev libtest-tempdir-perl libtool libwww-perl libxml2 libxml2-dev libxml2-utils libxslt1-dev libyaml-dev lzop mc memcached mlocate nettle-dev nomarch pkg-config python-setuptools python-dev python3-software-properties rkhunter software-properties-common sudo unzip vim-nox zip zlib1g zlib1g-dbg zlib1g-dev zoo >>"$main_log" 2>>"$err_log"
+DEBIAN_FRONTEND=noninteractive apt-get -y install dirmngr libldap2-dev python python-setuptools python3-software-properties apache2-dev apache2-utils apt-listchanges autoconf automake bison build-essential ca-certificates checkinstall curl flex git libapr1-dev libaprutil1 libaprutil1-dev libauthen-sasl-perl daemon libcunit1-dev libcrypt-ssleay-perl libcurl4-openssl-dev libgeoip-dev libio-socket-ssl-perl libio-string-perl libnet-dns-perl libnet-ident-perl libnet-ldap-perl libnet1 libnet1-dev libpam-dev libpcre-ocaml-dev libpcre3 libpcre3-dev libreadline6-dev libtest-tempdir-perl libtool libwww-perl libxml2 libxml2-dev libxml2-utils libxslt1-dev libyaml-dev memcached nettle-dev pkg-config rkhunter software-properties-common sudo unzip zlib1g zlib1g-dbg zlib1g-dev >>"$main_log" 2>>"$err_log"
+
+#mailcow Reste?
+#bsd-mailx 
+#libawl-php
+#liblogger-syslog-perl
+#libtest-tempdir-perl
+#libmime-base64-urlsafe-perl
+#libdbi-perl
+#liblockfile-simple-perl 
+#file
+#libmail-dkim-perl
+#libmail-spf-perl
+#jq
+
 
 if [ "$?" -ne "0" ]; then
 	echo "${error} Package installation failed!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	exit 1
-fi
-
-echo "${info} Installing Composer..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-if [[ ${USE_MAILSERVER} == '1' ]] || [[ ${USE_PMA} == '1' ]]; then
-#Install Composer
-cd ~/sources
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" >>"$main_log" 2>>"$err_log"
-php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" >>"$main_log" 2>>"$err_log" || error_exit "Cannot verify Composer Hash! Aborting"
-php composer-setup.php >>"$main_log" 2>>"$err_log"
-php -r "unlink('composer-setup.php');"
-mv composer.phar /usr/local/bin/composer
 fi
 
 # System Tuning

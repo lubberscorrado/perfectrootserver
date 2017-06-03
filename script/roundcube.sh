@@ -33,6 +33,7 @@ echo "${info} Installing Roundcube..." | awk '{ print strftime("[%H:%M:%S] |"), 
 mysql --defaults-file=/etc/mysql/debian.cnf -e "CREATE DATABASE roundcube; GRANT ALL ON roundcube.* TO 'roundcube'@'localhost' IDENTIFIED BY '$ROUNDCUBE_MYSQL_PASS'; FLUSH PRIVILEGES;" >>"$main_log" 2>>"$err_log"
 
 #Download from source 
+mkdir cd /var/www/html
 cd /var/www/html
 wget https://github.com/roundcube/roundcubemail/releases/download/${ROUNDCUBE_VERSION}/roundcubemail-${ROUNDCUBE_VERSION}-complete.tar.gz >>"$main_log" 2>>"$err_log"
 mkdir -p /var/www/html/webmail

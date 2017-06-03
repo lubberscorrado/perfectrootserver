@@ -36,12 +36,12 @@ source script/instructions.sh
 source script/bash.sh
 source script/system.sh
 source script/mariadb.sh
-if [[ ${USE_PHP7} == '1' ]] && [[ ${USE_PHP5} == '0' ]]; then
+if [[ ${USE_PHP7} == '1' ]] && [[ ${USE_PHP71} == '0' ]]; then
 		source script/php7.sh
 fi
 
-if [[ ${USE_PHP7} == '0' ]] && [[ ${USE_PHP5} == '1' ]]; then
-		source script/php5.sh
+if [[ ${USE_PHP7} == '0' ]] && [[ ${USE_PHP71} == '1' ]]; then
+		source script/php7-1.sh
 fi
 
 source script/ssl.sh
@@ -102,12 +102,12 @@ ssl
 ssh
 nginx
 
-if [[ ${USE_PHP7} == '1' ]] && [[ ${USE_PHP5} == '0' ]]; then
+if [[ ${USE_PHP7} == '1' ]] && [[ ${USE_PHP71} == '0' ]]; then
 		php7
 fi
 
-if [[ ${USE_PHP7} == '0' ]] && [[ ${USE_PHP5} == '1' ]]; then
-		php5
+if [[ ${USE_PHP7} == '0' ]] && [[ ${USE_PHP71} == '1' ]]; then
+		php71
 fi
 
 dovecot

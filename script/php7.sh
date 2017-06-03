@@ -101,4 +101,14 @@ ln -s /etc/php/$PHPVERSION7/mods-available/apcu.ini /etc/php/$PHPVERSION7/mods-a
 
 systemctl -q start nginx.service
 systemctl -q restart php7.0-fpm.service
+
+echo "${info} Installing Composer..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+if [[ ${USE_MAILSERVER} == '1' ]] || [[ ${USE_PMA} == '1' ]]; then
+cd ~/sources
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" >>"$main_log" 2>>"$err_log"
+php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" >>"$main_log" 2>>"$err_log" || error_exit "Cannot verify Composer Hash! Aborting"
+php composer-setup.php >>"$main_log" 2>>"$err_log"
+php -r "unlink('composer-setup.php');"
+mv composer.phar /usr/local/bin/composer
+fi
 }

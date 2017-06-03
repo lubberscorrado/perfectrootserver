@@ -29,19 +29,19 @@ dovecot() {
 if [ ${USE_MAILSERVER} == '1' ]; then
 echo "${info} Installing Dovecot..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
-openssl req -new -newkey rsa:4096 -sha256 -days 1095 -nodes -x509 -subj "/C=DE/ST=STATE/L=CITY/O=MAIL/CN=mail.${MYDOMAIN}" -keyout /etc/ssl/mail.${MYDOMAIN}.key  -out /etc/ssl/mail.${MYDOMAIN}.cer >>"$main_log" 2>>"$err_log" || error_exit "Cannot create Mail key! Aborting"
-chmod 600 /etc/ssl/mail.${MYDOMAIN}.key >>"$main_log" 2>>"$err_log"
-cp /etc/ssl/mail.${MYDOMAIN}.cer /usr/local/share/ca-certificates/ >>"$main_log" 2>>"$err_log"
-update-ca-certificates >>"$main_log" 2>>"$err_log"
+openssl req -new -newkey rsa:4096 -sha256 -days 1095 -nodes -x509 -subj "/C=DE/ST=STATE/L=CITY/O=MAIL/CN=mail.${MYDOMAIN}" -keyout /etc/ssl/mail.${MYDOMAIN}.key  -out /etc/ssl/mail.${MYDOMAIN}.cer >>"$main_log" 2>>"$err_log" || error_exit "Cannot create mail key! Aborting"
+chmod 600 /etc/ssl/mail.${MYDOMAIN}.key >>"$main_log" 2>>"$err_log" || error_exit "Failed to set chmod! Aborting"
+cp /etc/ssl/mail.${MYDOMAIN}.cer /usr/local/share/ca-certificates/ >>"$main_log" 2>>"$err_log" || error_exit "Failed to copy mail key! Aborting"
+update-ca-certificates >>"$main_log" 2>>"$err_log" || error_exit "Cannot update certificates! Aborting"
 
-DEBIAN_FRONTEND=noninteractive apt-get -y install dovecot-common dovecot-core dovecot-imapd dovecot-lmtpd dovecot-managesieved dovecot-sieve dovecot-mysql >>"$main_log" 2>>"$err_log"
+DEBIAN_FRONTEND=noninteractive apt-get -y install dovecot-common dovecot-core dovecot-imapd dovecot-lmtpd dovecot-managesieved dovecot-sieve dovecot-mysql >>"$main_log" 2>>"$err_log" || error_exit "Cannot install Dovecot! Aborting"
 
-groupadd -g 5000 vmail >>"$main_log" 2>>"$err_log"
-useradd -g vmail -u 5000 vmail -d /var/vmail >>"$main_log" 2>>"$err_log"
-mkdir /var/vmail 
-chown -R vmail: /var/vmail/
+groupadd -g 5000 vmail >>"$main_log" 2>>"$err_log" || error_exit "Failed to grouapp vmail! Aborting"
+useradd -g vmail -u 5000 vmail -d /var/vmail >>"$main_log" 2>>"$err_log" || error_exit "Failed to useradd vmail! Aborting"
+mkdir /var/vmail || error_exit "Failed to mkdir /var/vmail! Aborting"
+chown -R vmail: /var/vmail/ || error_exit "Failed to chown /var/vmail! Aborting"
 
-rm /etc/dovecot/dovecot.conf
+rm /etc/dovecot/dovecot.conf || error_exit "Failed to remove /etc/dovecot/dovecot.conf! Aborting"
 cat > /etc/dovecot/dovecot.conf <<END
 auth_mechanisms = plain login
 disable_plaintext_auth = yes
@@ -226,8 +226,8 @@ user_query = SELECT homedir AS home, \
 iterate_query = SELECT username FROM mailbox;
 END
 
-chown root:vmail /etc/dovecot/dovecot-mysql.conf
-chmod 640 /etc/dovecot/dovecot-mysql.conf
+chown root:vmail /etc/dovecot/dovecot-mysql.conf || error_exit "Failed to chown /etc/dovecot/dovecot-mysql.conf! Aborting"
+chmod 640 /etc/dovecot/dovecot-mysql.conf || error_exit "Failed to chmod /etc/dovecot/dovecot-mysql.conf! Aborting"
 
 cat > /var/vmail/before.sieve <<END
 require "fileinto";
@@ -237,7 +237,7 @@ if header :contains "X-Spam-Flag" "YES" {
 END
 
 sievec /var/vmail/before.sieve
-chown vmail: /var/vmail/before.*
+chown vmail: /var/vmail/before.* || error_exit "Failed to chown /var/vmail/before.*! Aborting"
 fi
 }
 source ~/configs/userconfig.cfg

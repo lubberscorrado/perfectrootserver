@@ -25,6 +25,9 @@
 ##  DO NOT MODIFY, JUST DON'T! ##
 #################################
 
+source ~/script/functions.sh
+source ~/configs/userconfig.cfg
+
 prerequisites() {
 
 	echo
@@ -75,11 +78,13 @@ checksystem() {
 	apt-get -y --purge remove nfs-kernel-server nfs-common portmap rpcbind >>"$main_log" 2>>"$err_log"
 
 	if [ $USER != 'root' ]; then
-        error_exit "Please run the script as root" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+        echo " ${error}Please run the script as root" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+		exit 1
 	fi
 
 	if [ $(lsb_release -cs) != 'stretch' ] || [ $(lsb_release -is) != 'Debian' ]; then
-        error_exit "The script for now works only on $(textb Debian) $(textb 9.x)" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+        echo "${error} The script for now works only on $(textb Debian) $(textb 9.x)" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+		exit 1
 	fi
 
 	if [ $(grep MemTotal /proc/meminfo | awk '{print $2}') -lt 1000000 ]; then
@@ -87,9 +92,16 @@ checksystem() {
 		echo "${info} Press $(textb ENTER) to skip this warning or $(textb CTRL-C) to cancel the process" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 		read -s -n 1 i
 	fi
+	
+	FREE=`df -k --output=avail "$PWD" | tail -n1`  
+	if [[ $FREE -lt 9437184 ]]; then               # 9G = 9*1024*1024
+		echo "${error} This script needs at least 9 GB free disk space" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+		exit 1
+	fi
 
 	if [ $(dpkg-query -l | grep dmidecode | wc -l) -ne 1 ]; then
-    	error_exit "This script does not support the virtualization technology!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+    	echo "${error} This script does not support the virtualization technology!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+		exit 1
 	fi
 
 	if [ "$(dmidecode -s system-product-name)" == 'Bochs' ] || [ "$(dmidecode -s system-product-name)" == 'KVM' ] || [ "$(dmidecode -s system-product-name)" == 'All Series' ] || [ "$(dmidecode -s system-product-name)" == 'OpenStack Nova' ] || [ "$(dmidecode -s system-product-name)" == 'Standard' ]; then
@@ -167,5 +179,3 @@ checksystem() {
 	mkdir -p ~/sources
 
 }
-source ~/script/functions.sh
-source ~/configs/userconfig.cfg
