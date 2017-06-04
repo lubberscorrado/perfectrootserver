@@ -72,7 +72,7 @@ prerequisites() {
 
 checksystem() {
 	
-	echo "$(date +"[%T]") | ${info} Checking your system..."
+	#echo "$(date +"[%T]") | ${info} Checking your system..."
 
 	#Get out nfs
 	apt-get -y --purge remove nfs-kernel-server nfs-common portmap rpcbind >>"$main_log" 2>>"$err_log"

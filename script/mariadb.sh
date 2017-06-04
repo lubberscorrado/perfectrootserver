@@ -27,7 +27,7 @@
 
 mariadb() {
 
-echo "${info} Installing MariaDB..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Installing MariaDB..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 DEBIAN_FRONTEND=noninteractive apt-get -y install mariadb-server >>"$main_log" 2>>"$err_log"
 
 mysqladmin -u root password ${MYSQL_ROOT_PASS}

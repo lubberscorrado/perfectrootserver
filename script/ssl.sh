@@ -29,7 +29,7 @@ ssl() {
 
 # OpenSSL
 
-echo "${info} Installing OpenSSL libs & headers..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Installing OpenSSL libs & headers..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 apt-get -q -y --assume-yes install libssl-dev >>"$main_log" 2>>"$err_log"
 cd ~/sources
 wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz >>"$main_log" 2>>"$err_log"

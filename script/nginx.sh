@@ -29,22 +29,22 @@ nginx() {
 
 # Nginx
 cd ~/sources
-echo "${info} Downloading Nginx Pagespeed..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Downloading Nginx Pagespeed..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 wget https://codeload.github.com/pagespeed/ngx_pagespeed/zip/v${NPS_VERSION}-beta >>"$main_log" 2>>"$err_log"
 unzip v${NPS_VERSION}-beta >>"$main_log" 2>>"$err_log"
 
-echo "${info} Downloading Nginx Pagespeed psol..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Downloading Nginx Pagespeed psol..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 cd ngx_pagespeed-${NPS_VERSION}-beta/ >>"$main_log" 2>>"$err_log"
 wget https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}-x64.tar.gz >>"$main_log" 2>>"$err_log"
 tar -xzf ${NPS_VERSION}-x64.tar.gz >>"$main_log" 2>>"$err_log"
 
 cd ~/sources
-echo "${info} Downloading Nginx..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Downloading Nginx..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz >>"$main_log" 2>>"$err_log"
 tar -xzf nginx-${NGINX_VERSION}.tar.gz
 cd nginx-${NGINX_VERSION}
 
-echo "${info} Compiling Nginx..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Compiling Nginx..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 ./configure --prefix=/etc/nginx \
 --sbin-path=/usr/sbin/nginx \
 --conf-path=/etc/nginx/nginx.conf \
@@ -103,7 +103,7 @@ make >>"$make_log" 2>>"$make_err_log"
 # Create a .deb package
 checkinstall --install=no -y >>"$main_log" 2>>"$err_log"
 # Install the package
-echo "${info} Installing Nginx..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Installing Nginx..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 dpkg -i nginx_${NGINX_VERSION}-1_amd64.deb >>"$main_log" 2>>"$err_log"
 mv nginx_${NGINX_VERSION}-1_amd64.deb ../
 
@@ -132,7 +132,7 @@ chown root:root /etc/init.d/nginx
 update-rc.d nginx defaults
 
 # Edit/create Nginx config files
-echo "${info} Configuring Nginx..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Configuring Nginx..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
 rm -rf /etc/nginx/nginx.conf
 cat > /etc/nginx/nginx.conf <<END
@@ -201,7 +201,7 @@ END
 # SSL certificate
 service nginx stop
 if [[ ${CLOUDFLARE} = '0' ]] && [[ ${USE_VALID_SSL} = '1' ]]; then
-	echo "${info} Creating valid SSL certificates..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+	#echo "${info} Creating valid SSL certificates..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	git clone https://github.com/letsencrypt/letsencrypt ~/sources/letsencrypt -q
 	cd ~/sources/letsencrypt
 	if [ ${USE_MAILSERVER} == '1' ]; then
@@ -212,7 +212,7 @@ if [[ ${CLOUDFLARE} = '0' ]] && [[ ${USE_VALID_SSL} = '1' ]]; then
 	ln -s /etc/letsencrypt/live/${MYDOMAIN}/fullchain.pem /etc/nginx/ssl/${MYDOMAIN}.pem
 	ln -s /etc/letsencrypt/live/${MYDOMAIN}/privkey.pem /etc/nginx/ssl/${MYDOMAIN}.key.pem
 else
-	echo "${info} Creating self-signed SSL certificates..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+	#echo "${info} Creating self-signed SSL certificates..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 	openssl ecparam -genkey -name secp384r1 -out /etc/nginx/ssl/${MYDOMAIN}.key.pem >>"$main_log" 2>>"$err_log"
 	openssl req -new -sha256 -key /etc/nginx/ssl/${MYDOMAIN}.key.pem -out /etc/nginx/ssl/csr.pem -subj "/C=DE/ST=Private/L=Private/O=Private/OU=Private/CN=*.${MYDOMAIN}" >>"$main_log" 2>>"$err_log"
 	openssl req -x509 -days 365 -key /etc/nginx/ssl/${MYDOMAIN}.key.pem -in /etc/nginx/ssl/csr.pem -out /etc/nginx/ssl/${MYDOMAIN}.pem -subj "/C=DE/ST=Private/L=Private/O=Private/OU=Private/CN=*.${MYDOMAIN}" >>"$main_log" 2>>"$err_log"
@@ -221,7 +221,7 @@ fi
 HPKP1=$(openssl x509 -pubkey < /etc/nginx/ssl/${MYDOMAIN}.pem | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64)
 HPKP2=$(openssl rand -base64 32)
 
-echo "${info} Creating strong Diffie-Hellman parameters, please wait..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Creating strong Diffie-Hellman parameters, please wait..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 openssl dhparam -out /etc/nginx/ssl/dh.pem ${RSA_KEY_SIZE} >>"$main_log" 2>>"$err_log"
 
 mkdir -p /etc/nginx/html/${MYDOMAIN}

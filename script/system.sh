@@ -27,7 +27,7 @@
 #################################
 
 system() {
-echo "${info} Starting installation!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Starting installation!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
 cat > /etc/hosts <<END
 127.0.0.1 localhost
@@ -44,14 +44,14 @@ fi
 	hostnamectl set-hostname mail.${MYDOMAIN}
 	echo "${MYDOMAIN}" > /etc/mailname
 
-echo "${info} Setting your hostname & timezone..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Setting your hostname & timezone..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 if [[ -f /usr/share/zoneinfo/${TIMEZONE} ]] ; then
 	echo ${TIMEZONE} > /etc/timezone
 	dpkg-reconfigure -f noninteractive tzdata >>"$main_log" 2>>"$err_log" || error_exit "Cannot set Timezone! Aborting"
 fi
 
-echo "${info} Installing prerequisites..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-echo "${warn} Some of the tasks could take a long time, please be patient!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Installing prerequisites..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${warn} Some of the tasks could take a long time, please be patient!" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
 rm /etc/apt/sources.list
 cat > /etc/apt/sources.list <<END
@@ -93,7 +93,7 @@ if [ "$?" -ne "0" ]; then
 fi
 
 # System Tuning
-echo "${info} Kernel hardening & system tuning..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Kernel hardening & system tuning..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 cat > /etc/sysctl.conf <<END
 fs.file-max = 209708
 fs.inotify.max_user_instances = 2048

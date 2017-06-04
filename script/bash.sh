@@ -27,7 +27,7 @@
 
 bashinstall() {
 
-echo "${info} Downloading GNU bash & latest security patches..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Downloading GNU bash & latest security patches..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 cd ~/sources || error_exit "Cannot cd to sources! Aborting"
 mkdir bash && cd $_ || error_exit "Cannot create Bash Folder! Aborting"
 wget https://ftp.gnu.org/gnu/bash/bash-${BASH_VERSION}.tar.gz >>"$main_log" 2>>"$err_log" || error_exit "Cannot download Bash! Aborting"
@@ -38,10 +38,10 @@ nfiles=$(ls | wc -l)
 tar zxf bash-${BASH_VERSION}.tar.gz && cd bash-${BASH_VERSION} >>"$main_log" 2>>"$err_log" || error_exit "Cannot extract Bash! Aborting"
 
 ##################### Fix me!!! #######
-echo "${info} Patching sourcefiles..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Patching sourcefiles..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 for i in ../bash${BASH}-[0-9][0-9][0-9]; do patch -p0 -s < $i; done
 
-echo "${info} Compiling GNU bash..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Compiling GNU bash..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 ./configure --prefix=/usr/local >>"$make_log" 2>>"$make_err_log" || error_exit "Cannot configure Bash! Aborting"
 make >>"$make_log" 2>>"$make_err_log" || error_exit "Cannot make Bash! Aborting"
 make install >>"$make_log" 2>>"$make_err_log" || error_exit "Cannot install Bash! Aborting"

@@ -27,8 +27,8 @@
 
 mailfilter() {
 if [ ${USE_MAILSERVER} == '1' ]; then
-echo "${info} Installing Mailfilter..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-apt-get install -y libdbd-mysql-perl 
+#echo "${info} Installing Mailfilter..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+apt-get install -y libdbd-mysql-perl >>"$main_log" 2>>"$err_log" 
 
 DEBIAN_FRONTEND=noninteractive apt-get -y install rar unrar arj zip bzip2 gzip cpio file lzop nomarch cabextract ripole rpm pax p7zip zoo ncompress >>"$main_log" 2>>"$err_log"
 DEBIAN_FRONTEND=noninteractive apt-get -y install amavisd-new clamav-daemon spamassassin >>"$main_log" 2>>"$err_log"

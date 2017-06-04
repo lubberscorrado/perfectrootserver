@@ -27,7 +27,7 @@
 
 vimbadmin() {
 if [ ${USE_MAILSERVER} == '1' ]; then
-echo "${info} Installing Vimbadmin..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Installing Vimbadmin..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
 #Create Database
 mysql --defaults-file=/etc/mysql/debian.cnf -e "CREATE DATABASE vimbadmin; GRANT ALL ON vimbadmin.* TO 'vimbadmin'@'localhost' IDENTIFIED BY '${VIMB_MYSQL_PASS}'; FLUSH PRIVILEGES;" >>"$main_log" 2>>"$err_log" || error_exit "Cannot create Vimbadmin Database! Aborting"

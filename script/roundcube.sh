@@ -27,7 +27,7 @@
 
 roundcube() {
 if [[ ${USE_WEBMAIL} = '1' ]]; then
-echo "${info} Installing Roundcube..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Installing Roundcube..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
 #Create Database
 mysql --defaults-file=/etc/mysql/debian.cnf -e "CREATE DATABASE roundcube; GRANT ALL ON roundcube.* TO 'roundcube'@'localhost' IDENTIFIED BY '$ROUNDCUBE_MYSQL_PASS'; FLUSH PRIVILEGES;" >>"$main_log" 2>>"$err_log"

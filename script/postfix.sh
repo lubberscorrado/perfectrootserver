@@ -27,7 +27,7 @@
 
 postfix() {
 if [[ ${USE_MAILSERVER} = '1' ]]; then
-echo "${info} Installing Postfix..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Installing Postfix..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
 DEBIAN_FRONTEND=noninteractive apt-get -y install postfix-mysql postfix-pcre postfix >>"$main_log" 2>>"$err_log"
 

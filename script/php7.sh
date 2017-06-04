@@ -28,13 +28,13 @@
 php7() {
 
 PHPVERSION7="7.0"
-echo "${info} Installing PHP7..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Installing PHP7..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
 apt-get purge -y php5* >>"$main_log" 2>>"$err_log"
 DEBIAN_FRONTEND=noninteractive apt-get -y install php-auth-sasl php-http-request php$PHPVERSION7-gd php$PHPVERSION7-bcmath php$PHPVERSION7-zip php-mail php-net-dime php-net-url php-pear php-apcu php$PHPVERSION7 php$PHPVERSION7-cli php$PHPVERSION7-common php$PHPVERSION7-curl php$PHPVERSION7-dev php$PHPVERSION7-fpm php$PHPVERSION7-intl php$PHPVERSION7-mcrypt php$PHPVERSION7-mysql php$PHPVERSION7-soap php$PHPVERSION7-sqlite3 php$PHPVERSION7-xsl php$PHPVERSION7-xmlrpc php-mbstring php-xml php$PHPVERSION7-json php$PHPVERSION7-opcache php$PHPVERSION7-readline php$PHPVERSION7-xml php$PHPVERSION7-mbstring php$PHPVERSION7-memcached >>"$main_log" 2>>"$err_log"
 
 # Configure PHP
-echo "${info} Configuring PHP7..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Configuring PHP7..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 sed -i 's/.*disable_functions =.*/disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,escapeshellarg,passthru,proc_close,proc_get_status,proc_nice,proc_open,proc_terminate,/' /etc/php/$PHPVERSION7/fpm/php.ini
 sed -i 's/.*ignore_user_abort =.*/ignore_user_abort = Off/' /etc/php/$PHPVERSION7/fpm/php.ini
 sed -i 's/.*expose_php =.*/expose_php = Off/' /etc/php/$PHPVERSION7/fpm/php.ini
@@ -102,7 +102,7 @@ ln -s /etc/php/$PHPVERSION7/mods-available/apcu.ini /etc/php/$PHPVERSION7/mods-a
 systemctl -q start nginx.service
 systemctl -q restart php7.0-fpm.service
 
-echo "${info} Installing Composer..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Installing Composer..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 if [[ ${USE_MAILSERVER} == '1' ]] || [[ ${USE_PMA} == '1' ]]; then
 cd ~/sources
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" >>"$main_log" 2>>"$err_log"

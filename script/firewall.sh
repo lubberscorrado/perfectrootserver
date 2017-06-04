@@ -25,7 +25,7 @@
 #################################
 
 firewall() {
-echo "${info} Installing Arno-Iptables-Firewall..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Installing Arno-Iptables-Firewall..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 
 # ipset
 if [ $(dpkg-query -l | grep ipset | wc -l) -ne 1 ]; then
@@ -36,7 +36,7 @@ git clone https://github.com/arno-iptables-firewall/aif.git ~/sources/aif -q
 
 # Create folders and copy files
 cd ~/sources/aif
-echo "${info} Configuring Arno-Iptables-Firewall..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+#echo "${info} Configuring Arno-Iptables-Firewall..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 mkdir -p /usr/local/share/arno-iptables-firewall/plugins
 mkdir -p /usr/local/share/man/man1
 mkdir -p /usr/local/share/man/man8
